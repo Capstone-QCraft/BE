@@ -1,4 +1,4 @@
-package QCraft.Qcraft;
+package QCraft.QCraft;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
