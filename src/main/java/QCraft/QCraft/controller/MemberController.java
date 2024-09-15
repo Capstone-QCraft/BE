@@ -1,11 +1,13 @@
 package QCraft.QCraft.controller;
 
-import QCraft.QCraft.dto.request.SignUpDTO;
-import QCraft.QCraft.exception.ValidateMemberException;
+import QCraft.QCraft.dto.request.*;
+import QCraft.QCraft.dto.response.*;
 import QCraft.QCraft.service.MemberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,17 +19,36 @@ public class MemberController {
     private final MemberService memberService;
 
 
-    //회원가입
-    @PostMapping("/signUp")
-    public ResponseEntity<?> signup(@RequestBody SignUpDTO signUpDTO) {
-        try {
-            memberService.signup(signUpDTO);
-            return ResponseEntity.ok("success signup");
-        } catch (ValidateMemberException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
-        }
+    //이메일 중복체크
+    @GetMapping("/email-check")
+    public ResponseEntity<? super EmailCheckResponseDTO> EmailCheck(@RequestBody @Valid EmailCheckRequestDTO emailCheckRequestDTO) {
+        return memberService.emailCheck(emailCheckRequestDTO);
     }
+
+    //이메일 인증번호 발송
+    @PostMapping("/email-certification")
+    public ResponseEntity<? super EmailCertificationResponseDTO> emailCertification(@RequestBody @Valid EmailCertificationRequestDTO emailCertificationRequestDTO) {
+        return memberService.emailCertification(emailCertificationRequestDTO);
+    }
+
+    //이메일 인증번호 확인
+    @PostMapping("/check-certification")
+    public ResponseEntity<? super CheckCertificationResponseDTO> checkCertification(@RequestBody @Valid CheckCertificationRequestDTO checkCertificationRequestDTO) {
+        return memberService.checkCertification(checkCertificationRequestDTO);
+    }
+
+    //회원가입
+    @PostMapping("/sign-up")
+    public ResponseEntity<? super SignUpResponseDTO> signUp(@RequestBody @Valid SignUpRequestDTO signUpRequestDTO) {
+        return memberService.signUp(signUpRequestDTO);
+    }
+
+    //로그인
+    @PostMapping("/sign-in")
+    public ResponseEntity<? super SignInResponseDTO> signIn(@RequestBody @Valid SignInRequestDTO signInRequestDTO) {
+        return memberService.signIn(signInRequestDTO);
+    }
+
+
 
 }

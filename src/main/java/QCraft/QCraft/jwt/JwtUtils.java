@@ -1,7 +1,7 @@
 package QCraft.QCraft.jwt;
 
 import QCraft.QCraft.domain.RefreshToken;
-import QCraft.QCraft.dto.request.TokenDTO;
+
 import QCraft.QCraft.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -34,34 +34,6 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-//    public TokenDTO createToken(String memberId){
-//        Date now = new Date();
-//        Date expiryDate = new Date(now.getTime() + expiration);
-//        Date refreshDate = new Date(now.getTime() + refreshExpiration);
-//
-//        String accessToken = Jwts.builder()
-//                .subject(memberId)
-//                .issuedAt(now)
-//                .expiration(expiryDate)
-//                .signWith(getSigningKey())
-//                .compact();
-//
-//        String refreshToken = Jwts.builder()
-//                .subject(memberId)
-//                .issuedAt(now)
-//                .expiration(refreshDate)
-//                .signWith(getSigningKey())
-//                .compact();
-//
-//
-//        return TokenDTO.builder()
-//                .grantType("Bearer")
-//                .accessToken(accessToken)
-//                .refreshToken(refreshToken)
-//                .accessTokenExpiresIn(expiration)
-//                .build();
-//    }
-
     //accessToken 생성
     public String createAccessToken(String memberId) {
 
@@ -84,7 +56,6 @@ public class JwtUtils {
         String refreshTokenString = Jwts.builder()
                 .subject(memberId)
                 .issuedAt(now)
-                .expiration(expiryDate)
                 .signWith(getSigningKey())
                 .compact();
 

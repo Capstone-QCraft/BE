@@ -1,5 +1,6 @@
 package QCraft.QCraft.domain;
 
+import QCraft.QCraft.dto.request.SignUpRequestDTO;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -14,7 +15,15 @@ public class Member {
     private String email;
     private String password;
     private String name;
-    private String age;
 
     private String role;
+    private String type;
+
+    public Member(SignUpRequestDTO signUpRequestDTO) {
+        this.email = signUpRequestDTO.getEmail();
+        this.password = signUpRequestDTO.getPassword();
+        this.name = signUpRequestDTO.getName();
+        this.role = "ROLE_USER";
+        this.type = "app";
+    }
 }

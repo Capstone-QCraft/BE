@@ -20,6 +20,7 @@ bin/
 ### IntelliJ IDEA ###
 application-db.properties
 application-jwt.properties
+application-common.properties
 .idea
 *.iws
 *.iml
