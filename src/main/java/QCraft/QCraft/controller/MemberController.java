@@ -49,6 +49,12 @@ public class MemberController {
         return memberService.signIn(signInRequestDTO);
     }
 
+    //토큰 재발급
+    @PostMapping("/re-issue")
+    public ResponseEntity<? super ReissueTokenResponseDTO> reIssue(@RequestBody @Valid ReissueTokenRequestDTO reissueTokenRequestDTO) {
+        return memberService.reissueToken(reissueTokenRequestDTO);
+    }
+
 
 
 }

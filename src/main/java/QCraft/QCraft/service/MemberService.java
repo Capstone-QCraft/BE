@@ -11,4 +11,5 @@ public interface MemberService {
     ResponseEntity<? super CheckCertificationResponseDTO> checkCertification(CheckCertificationRequestDTO checkCertificationRequestDTO);
     ResponseEntity<? super SignUpResponseDTO> signUp(SignUpRequestDTO signUpRequestDTO);
     ResponseEntity<? super SignInResponseDTO> signIn(SignInRequestDTO signInRequestDTO);
+    ResponseEntity<? super ReissueTokenResponseDTO> reissueToken(ReissueTokenRequestDTO reissueTokenRequestDTO);
 }

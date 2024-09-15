@@ -2,6 +2,7 @@ package QCraft.QCraft.service.impl;
 
 import QCraft.QCraft.domain.Certification;
 import QCraft.QCraft.domain.Member;
+import QCraft.QCraft.domain.RefreshToken;
 import QCraft.QCraft.dto.request.*;
 import QCraft.QCraft.dto.response.*;
 import QCraft.QCraft.email.CertificationNumber;
@@ -9,13 +10,12 @@ import QCraft.QCraft.email.EmailUtils;
 import QCraft.QCraft.jwt.JwtUtils;
 import QCraft.QCraft.repository.CertificationRepository;
 import QCraft.QCraft.repository.MemberRepository;
+import QCraft.QCraft.repository.RefreshTokenRepository;
 import QCraft.QCraft.service.MemberService;
-import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.Optional;
@@ -25,6 +25,8 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final CertificationRepository certificationRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+
     private final EmailUtils emailUtils;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
@@ -145,7 +147,6 @@ public class MemberServiceImpl implements MemberService {
     public ResponseEntity<? super SignInResponseDTO> signIn(SignInRequestDTO signInRequestDTO) {
         String accessToken=null;
         String refreshToken=null;
-        int expiresIn=0;
         try{
             String email = signInRequestDTO.getEmail();
             String password = signInRequestDTO.getPassword();
@@ -162,7 +163,7 @@ public class MemberServiceImpl implements MemberService {
 
             String memberId = member.get().getId();
             accessToken = jwtUtils.createAccessToken(memberId);
-            refreshToken = jwtUtils.createRefreshToken(memberId);
+            refreshToken = jwtUtils.createRefreshToken(memberId, false);
 
 
 
@@ -171,7 +172,38 @@ public class MemberServiceImpl implements MemberService {
             return ResponseDTO.databaseError();
         }
 
-        return SignInResponseDTO.success(accessToken,refreshToken,expiresIn);
+        return SignInResponseDTO.success(accessToken,refreshToken);
+    }
+
+    //accessToken 재발급
+    @Override
+    public ResponseEntity<? super ReissueTokenResponseDTO> reissueToken(ReissueTokenRequestDTO reissueTokenRequestDTO) {
+        String newAccessToken = null;
+        String newRefreshToken = null;
+        try {
+            String memberId = reissueTokenRequestDTO.getMemberId();
+            String refreshToken = reissueTokenRequestDTO.getRefreshToken();
+
+            Optional<RefreshToken> rt = refreshTokenRepository.findByMemberId(memberId);
+
+            if(rt.isEmpty()){
+                return ReissueTokenResponseDTO.tokenExpiration();
+            }
+
+            if(rt.get().getRefreshToken().equals(refreshToken)){
+                return ReissueTokenResponseDTO.tokenExpiration();
+            }
+
+            newAccessToken = jwtUtils.createAccessToken(memberId);
+            newRefreshToken = jwtUtils.createRefreshToken(memberId, true);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseDTO.databaseError();
+        }
+
+        return ReissueTokenResponseDTO.success(newAccessToken, newRefreshToken);
+
     }
 
 }

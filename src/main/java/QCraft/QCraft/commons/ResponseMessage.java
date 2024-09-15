@@ -11,4 +11,6 @@ public interface ResponseMessage {
 
     String MAIL_FAILED = "mail failed";
     String DATABASE_ERROR = "database error";
+
+    String EXPIRED_TOKEN = "expired token";
 }

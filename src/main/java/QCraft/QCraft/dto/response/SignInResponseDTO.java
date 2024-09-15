@@ -11,19 +11,17 @@ public class SignInResponseDTO extends ResponseDTO {
 
     private String accessToken;
     private String freshToken;
-    private int expiresIn;
 
 
 
-    private SignInResponseDTO(String accessToken, String freshToken, int expiresIn) {
+    private SignInResponseDTO(String accessToken, String freshToken) {
         super();
         this.accessToken = accessToken;
         this.freshToken = freshToken;
-        this.expiresIn = expiresIn;
     }
 
-    public static ResponseEntity<SignInResponseDTO> success(String accessToken, String freshToken, int expiresIn) {
-        SignInResponseDTO responseBody = new SignInResponseDTO(accessToken,freshToken, expiresIn);
+    public static ResponseEntity<SignInResponseDTO> success(String accessToken, String freshToken) {
+        SignInResponseDTO responseBody = new SignInResponseDTO(accessToken,freshToken);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -49,7 +50,7 @@ public class JwtUtils {
     }
 
     //refreshToken 생성
-    public String createRefreshToken(String memberId) {
+    public String createRefreshToken(String memberId, boolean isReissue) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshExpiration);
 
@@ -59,8 +60,20 @@ public class JwtUtils {
                 .signWith(getSigningKey())
                 .compact();
 
-        RefreshToken refreshToken = new RefreshToken(memberId,refreshTokenString, expiryDate);
-        refreshTokenRepository.save(refreshToken);
+        if(!isReissue){//새로 발급
+            RefreshToken refreshToken = new RefreshToken(memberId,refreshTokenString, expiryDate);
+            refreshTokenRepository.save(refreshToken);
+        }else {//재발급 RTR
+            Optional<RefreshToken> refreshTokenOptional =  refreshTokenRepository.findByMemberId(memberId);
+            if(refreshTokenOptional.isPresent()){
+                    RefreshToken refreshToken = refreshTokenOptional.get();
+                    refreshToken.setRefreshToken(refreshTokenString);
+                    refreshTokenRepository.save(refreshToken);
+            }else {
+                throw new RuntimeException("이건 진짜 일어날 수 없는 오류임 ㄹㅇㅋㅋ");
+            }
+        }
+
 
         return refreshTokenString;
 

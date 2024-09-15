@@ -12,4 +12,6 @@ public interface ResponseCode {
     String MAIL_FAILED = "MF";
     String DATABASE_ERROR = "DBE";
 
+    String EXPIRED_TOKEN = "ET";
+
 }
