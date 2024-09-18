@@ -25,9 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtils jwtUtils;
     private final MemberRepository memberRepository;
@@ -75,8 +75,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String parseBearerToken(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
 
-        boolean hasAuthorization = StringUtils.hasText("Authorization");
-        boolean isBearer = authorization != null && authorization.startsWith("Bearer ");
+        boolean hasAuthorization = StringUtils.hasText(authorization);
+        boolean isBearer = authorization.startsWith("Bearer ");
 
         if (!hasAuthorization) {
             log.error("Authorization header is missing - {}", authorization);

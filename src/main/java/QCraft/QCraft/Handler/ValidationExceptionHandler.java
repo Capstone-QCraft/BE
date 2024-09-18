@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ValidationExceptionHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
-    public ResponseEntity<ResponseDTO> validationException(Exception e) {
+    public ResponseEntity<ResponseDTO> validationExceptionHandler(Exception e) {
         return ResponseDTO.validationError();
     }
 }

@@ -24,6 +24,14 @@ public class Member {
         this.password = signUpRequestDTO.getPassword();
         this.name = signUpRequestDTO.getName();
         this.role = "ROLE_USER";
-        this.type = "app";
+        this.type = "email";
+    }
+
+    public Member(String email, String name, String type) {
+        this.email = email;
+        this.password = "password";
+        this.name = name;
+        this.role = "ROLE_USER";
+        this.type = type;
     }
 }

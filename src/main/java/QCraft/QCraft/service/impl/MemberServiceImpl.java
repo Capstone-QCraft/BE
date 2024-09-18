@@ -161,9 +161,14 @@ public class MemberServiceImpl implements MemberService {
                 return SignInResponseDTO.signInFailed();
             }
 
+            String type = member.get().getType();
+            if(type.equals("email")){
+                return SignInResponseDTO.signInFailed();
+            }
+
             String memberId = member.get().getId();
             accessToken = jwtUtils.createAccessToken(memberId);
-            refreshToken = jwtUtils.createRefreshToken(memberId, false);
+            refreshToken = jwtUtils.createRefreshToken(memberId);
 
 
 
@@ -184,18 +189,18 @@ public class MemberServiceImpl implements MemberService {
             String memberId = reissueTokenRequestDTO.getMemberId();
             String refreshToken = reissueTokenRequestDTO.getRefreshToken();
 
-            Optional<RefreshToken> rt = refreshTokenRepository.findByMemberId(memberId);
+            Optional<RefreshToken> rt = refreshTokenRepository.findByRefreshToken(refreshToken);
 
             if(rt.isEmpty()){
                 return ReissueTokenResponseDTO.tokenExpiration();
             }
 
-            if(rt.get().getRefreshToken().equals(refreshToken)){
+            if(!rt.get().getRefreshToken().equals(refreshToken)){
                 return ReissueTokenResponseDTO.tokenExpiration();
             }
 
             newAccessToken = jwtUtils.createAccessToken(memberId);
-            newRefreshToken = jwtUtils.createRefreshToken(memberId, true);
+            newRefreshToken = jwtUtils.createRefreshToken(memberId, rt.get());
 
         }catch (Exception e){
             e.printStackTrace();

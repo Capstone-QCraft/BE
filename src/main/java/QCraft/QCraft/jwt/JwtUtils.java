@@ -5,6 +5,7 @@ import QCraft.QCraft.domain.RefreshToken;
 import QCraft.QCraft.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.Date;
 import java.util.Optional;
 
@@ -30,70 +33,88 @@ public class JwtUtils {
     private long refreshExpiration;
 
 
-    private SecretKey getSigningKey(){
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
 
     //accessToken 생성
     public String createAccessToken(String memberId) {
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
+        Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
         return Jwts.builder()
-                .subject(memberId)
-                .issuedAt(now)
-                .expiration(expiryDate)
-                .signWith(getSigningKey())//signwith(key, signtureArgorithm) is deprecated
+                .signWith(key, SignatureAlgorithm.HS256)
+                .setSubject(memberId)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
                 .compact();
+
     }
 
     //refreshToken 생성
-    public String createRefreshToken(String memberId, boolean isReissue) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + refreshExpiration);
+    public String createRefreshToken(String memberId) {
+        final int MAX_ATTEMPTS = 3;
+        int attempts = 0;
+        String refreshTokenString;
+        while (true) {
+            Date now = new Date();
+            Date expiryDate = new Date(now.getTime() + refreshExpiration);
+            Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
-        String refreshTokenString = Jwts.builder()
-                .subject(memberId)
-                .issuedAt(now)
-                .signWith(getSigningKey())
-                .compact();
+            refreshTokenString = Jwts.builder()
+                    .signWith(key, SignatureAlgorithm.HS256)
+                    .setSubject(memberId)
+                    .setIssuedAt(now)
+                    .compact();
 
-        if(!isReissue){//새로 발급
-            RefreshToken refreshToken = new RefreshToken(memberId,refreshTokenString, expiryDate);
-            refreshTokenRepository.save(refreshToken);
-        }else {//재발급 RTR
-            Optional<RefreshToken> refreshTokenOptional =  refreshTokenRepository.findByMemberId(memberId);
-            if(refreshTokenOptional.isPresent()){
-                    RefreshToken refreshToken = refreshTokenOptional.get();
-                    refreshToken.setRefreshToken(refreshTokenString);
-                    refreshTokenRepository.save(refreshToken);
-            }else {
-                throw new RuntimeException("이건 진짜 일어날 수 없는 오류임 ㄹㅇㅋㅋ");
+
+            if(!refreshTokenRepository.existsRefreshTokenBy(refreshTokenString)){
+                RefreshToken refreshToken = new RefreshToken(memberId, refreshTokenString, expiryDate);
+                refreshTokenRepository.save(refreshToken);
+                return refreshTokenString;
+            }
+            attempts++;
+            if(attempts >= MAX_ATTEMPTS){
+                throw new RuntimeException("Too many attempts");
             }
         }
-
-
-        return refreshTokenString;
-
     }
 
-    //jwt검증
-    public String validateToken(String jwt){
-        Claims claims = null;
+    //refreshToken 재발급
+    public String createRefreshToken(String memberId, RefreshToken refreshToken) {
+        Date now = new Date();
+        Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
-        try{
-            claims = Jwts.parser() //parserbuild() is deprecated
-                    .verifyWith(getSigningKey())
+        String refreshTokenString = Jwts.builder()
+                .signWith(key, SignatureAlgorithm.HS256)
+                .setSubject(memberId)
+                .setIssuedAt(now)
+                .compact();
+
+        refreshToken.setRefreshToken(refreshTokenString);
+        refreshTokenRepository.save(refreshToken);
+
+        return refreshTokenString;
+    }
+
+
+    //jwt검증
+    public String validateToken(String jwt) {
+        Claims claims = null;
+        Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+
+        try {
+            claims = Jwts.parserBuilder()
+                    .setSigningKey(key)
                     .build()
-                    .parseSignedClaims(jwt)
-                    .getPayload();
-        }catch (Exception e){
+                    .parseClaimsJws(jwt)
+                    .getBody();
+
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
 
         return claims.getSubject();
     }
+
 }
