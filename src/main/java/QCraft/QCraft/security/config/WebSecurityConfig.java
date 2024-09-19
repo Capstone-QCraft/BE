@@ -48,7 +48,7 @@ public class WebSecurityConfig {
                 )
                 .oauth2Login(oauth2-> oauth2
                         .authorizationEndpoint(endpoint-> endpoint.baseUri("/member/oauth2"))
-                        .redirectionEndpoint(endpoint-> endpoint.baseUri("/oauth2/callback/*"))
+                        .redirectionEndpoint(endpoint-> endpoint.baseUri("/oauth2/callback/**"))
                         .userInfoEndpoint(endpoint->endpoint.userService(defaultOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                 )
