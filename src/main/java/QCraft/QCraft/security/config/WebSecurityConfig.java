@@ -43,12 +43,12 @@ public class WebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/","/member/signIn","/member/signUp","/oauth2/**").permitAll()
+                        .requestMatchers("/","/member/signIn","/member/signUp","/member/oauth2","/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2-> oauth2
                         .authorizationEndpoint(endpoint-> endpoint.baseUri("/member/oauth2"))
-                        .redirectionEndpoint(endpoint-> endpoint.baseUri("/oauth2/callback/**"))
+                        .redirectionEndpoint(endpoint-> endpoint.baseUri("/oauth2/callback/*"))
                         .userInfoEndpoint(endpoint->endpoint.userService(defaultOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                 )
@@ -65,10 +65,10 @@ public class WebSecurityConfig {
     @Bean
     protected CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true);
         configuration.addAllowedOrigin("*");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
