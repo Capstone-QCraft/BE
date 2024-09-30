@@ -6,15 +6,11 @@ import QCraft.QCraft.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@Controller("/member")
+@RequestMapping("/member")
 public class MemberController {
     private final MemberService memberService;
 
@@ -49,11 +45,6 @@ public class MemberController {
         return memberService.signIn(signInRequestDTO);
     }
 
-    //토큰 재발급
-    @PostMapping("/re-issue")
-    public ResponseEntity<? super ReissueTokenResponseDTO> reIssue(@RequestBody @Valid ReissueTokenRequestDTO reissueTokenRequestDTO) {
-        return memberService.reissueToken(reissueTokenRequestDTO);
-    }
 
 
 

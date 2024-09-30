@@ -17,4 +17,5 @@ public class CheckCertificationRequestDTO {
 
     @NotBlank
     public String certificationNumber;
+
 }

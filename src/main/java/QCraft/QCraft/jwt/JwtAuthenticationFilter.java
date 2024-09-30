@@ -75,20 +75,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String parseBearerToken(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
 
-        boolean hasAuthorization = StringUtils.hasText(authorization);
-        boolean isBearer = authorization.startsWith("Bearer ");
-
-        if (!hasAuthorization) {
-            log.error("Authorization header is missing - {}", authorization);
+        if (!StringUtils.hasText(authorization)) {
+            log.error("Authorization header is missing");
             return null;
         }
 
-        if (!isBearer) {
+        if (!authorization.startsWith("Bearer ")) {
             log.error("This is not Bearer - {}", authorization);
             return null;
         }
 
-        String token = authorization.substring(7);
-        return token;
+        return authorization.substring(7);
     }
 }

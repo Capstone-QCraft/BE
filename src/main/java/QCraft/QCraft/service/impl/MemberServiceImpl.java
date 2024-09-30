@@ -2,7 +2,6 @@ package QCraft.QCraft.service.impl;
 
 import QCraft.QCraft.domain.Certification;
 import QCraft.QCraft.domain.Member;
-import QCraft.QCraft.domain.RefreshToken;
 import QCraft.QCraft.dto.request.*;
 import QCraft.QCraft.dto.response.*;
 import QCraft.QCraft.email.CertificationNumber;
@@ -10,10 +9,10 @@ import QCraft.QCraft.email.EmailUtils;
 import QCraft.QCraft.jwt.JwtUtils;
 import QCraft.QCraft.repository.CertificationRepository;
 import QCraft.QCraft.repository.MemberRepository;
-import QCraft.QCraft.repository.RefreshTokenRepository;
 import QCraft.QCraft.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +24,11 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final CertificationRepository certificationRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
 
     private final EmailUtils emailUtils;
-    private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 
     //이메일 중복체크
@@ -68,9 +67,22 @@ public class MemberServiceImpl implements MemberService {
                 return EmailCertificationResponseDTO.mailSendFailed();
             }
 
-            Certification certification = new Certification();
+            Optional<Certification> existingCertification = certificationRepository.findByEmail(userEmail);
+            Certification certification;
+
+            if (existingCertification.isPresent()) {
+                // 기존 인증 정보가 있으면 해당 정보 가져오기
+                certification = existingCertification.get();
+            } else {
+                // 새로운 인증 정보 생성
+                certification = new Certification();
+                certification.setEmail(userEmail);
+            }
+
+            // 인증번호 업데이트
             certification.setCertificationNumber(certificationNumber);
-            certification.setEmail(userEmail);
+
+            // 인증 정보 저장 (기존 인증 정보가 대체됨)
             certificationRepository.save(certification);
 
         } catch (Exception e) {
@@ -87,7 +99,7 @@ public class MemberServiceImpl implements MemberService {
         try {
 
             String email = checkCertificationRequestDTO.getEmail();
-            String certificationNumber = CertificationNumber.getCertificationNumber();
+            String certificationNumber = checkCertificationRequestDTO.getCertificationNumber();
 
             Optional<Certification> certification = certificationRepository.findByEmail(email);
             if (certification.isEmpty()) {
@@ -161,14 +173,9 @@ public class MemberServiceImpl implements MemberService {
                 return SignInResponseDTO.signInFailed();
             }
 
-            String type = member.get().getType();
-            if(type.equals("email")){
-                return SignInResponseDTO.signInFailed();
-            }
 
             String memberId = member.get().getId();
             accessToken = jwtUtils.createAccessToken(memberId);
-            refreshToken = jwtUtils.createRefreshToken(memberId);
 
 
 
@@ -177,38 +184,11 @@ public class MemberServiceImpl implements MemberService {
             return ResponseDTO.databaseError();
         }
 
-        return SignInResponseDTO.success(accessToken,refreshToken);
+        return SignInResponseDTO.success(accessToken);
     }
 
-    //accessToken 재발급
-    @Override
-    public ResponseEntity<? super ReissueTokenResponseDTO> reissueToken(ReissueTokenRequestDTO reissueTokenRequestDTO) {
-        String newAccessToken = null;
-        String newRefreshToken = null;
-        try {
-            String memberId = reissueTokenRequestDTO.getMemberId();
-            String refreshToken = reissueTokenRequestDTO.getRefreshToken();
 
-            Optional<RefreshToken> rt = refreshTokenRepository.findByRefreshToken(refreshToken);
+    //비밀번호 변경
 
-            if(rt.isEmpty()){
-                return ReissueTokenResponseDTO.tokenExpiration();
-            }
-
-            if(!rt.get().getRefreshToken().equals(refreshToken)){
-                return ReissueTokenResponseDTO.tokenExpiration();
-            }
-
-            newAccessToken = jwtUtils.createAccessToken(memberId);
-            newRefreshToken = jwtUtils.createRefreshToken(memberId, rt.get());
-
-        }catch (Exception e){
-            e.printStackTrace();
-            return ResponseDTO.databaseError();
-        }
-
-        return ReissueTokenResponseDTO.success(newAccessToken, newRefreshToken);
-
-    }
 
 }

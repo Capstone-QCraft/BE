@@ -28,13 +28,12 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
 
         try {
             System.out.println(new ObjectMapper().writeValueAsString(oAuth2User.getAttributes()));
-           // return processOAuth2User(oAuth2UserRequest, oAuth2User);
+            return processOAuth2User(oAuth2UserRequest, oAuth2User);
         } catch (AuthenticationException e) {
             throw e;
         } catch (Exception e) {
             throw new InternalAuthenticationServiceException(e.getMessage(), e.getCause());
         }
-        return oAuth2User;
     }
 
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
@@ -48,17 +47,23 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
                 userEmail = (String) oAuth2User.getAttributes().get("email");
                 userName = (String) oAuth2User.getAttributes().get("name");
                 member = new Member(userEmail,userName,"google");
+                System.out.println(userEmail+" "+userName);
                 break;
             case "kakao" :
-                userEmail = (String)oAuth2User.getAttributes().get("email");
-                userName = (String)oAuth2User.getAttributes().get("nickname");
+                Map<String, Object> kakaoAccount = (Map<String, Object>) oAuth2User.getAttributes().get("kakao_account");
+                Map<String, Object> kakaoProperties = (Map<String, Object>) oAuth2User.getAttributes().get("properties");
+
+                userEmail = (String) kakaoAccount.get("email");
+                userName = (String) kakaoProperties.get("nickname");
                 member = new Member(userEmail, userName, "kakao");
+                System.out.println(userEmail + " " + userName);
                 break;
             case "naver" :
                 Map<String, String> response = (Map<String, String>)oAuth2User.getAttributes().get("response");
                 userEmail = response.get("email");
                 userName = response.get("name");
                 member = new Member(userEmail, userName, "naver");
+                System.out.println(userEmail+" "+userName);
 
                 break;
             default:
@@ -66,7 +71,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
 
         }
 
-        //memberRepository.save(member);
+        memberRepository.save(member);
         return new CustomOAuth2User(userEmail);
     }
 

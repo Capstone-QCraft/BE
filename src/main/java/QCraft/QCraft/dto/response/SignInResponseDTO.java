@@ -10,18 +10,17 @@ import org.springframework.http.ResponseEntity;
 public class SignInResponseDTO extends ResponseDTO {
 
     private String accessToken;
-    private String freshToken;
 
 
 
-    private SignInResponseDTO(String accessToken, String freshToken) {
+
+    private SignInResponseDTO(String accessToken) {
         super();
         this.accessToken = accessToken;
-        this.freshToken = freshToken;
     }
 
-    public static ResponseEntity<SignInResponseDTO> success(String accessToken, String freshToken) {
-        SignInResponseDTO responseBody = new SignInResponseDTO(accessToken,freshToken);
+    public static ResponseEntity<SignInResponseDTO> success(String accessToken) {
+        SignInResponseDTO responseBody = new SignInResponseDTO(accessToken);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
