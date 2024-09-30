@@ -8,8 +8,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class EmailCheckRequestDTO {
+public class UpdateMemberInfoRequestDTO {
+    @NotBlank
+    public String email;
 
     @NotBlank
-    private String email;
+    public String name;
+
+    @NotBlank
+    public String oldPassword;
+
+    @NotBlank
+    public String newPassword;
 }

@@ -25,7 +25,7 @@ public class SignUpResponseDTO extends ResponseDTO {
     }
 
     public static ResponseEntity<ResponseDTO> certificationFailed(){
-        ResponseDTO responseBody = new ResponseDTO(ResponseCode.DUPLICATE_EMAIL, ResponseMessage.DUPLICATE_EMAIL);
+        ResponseDTO responseBody = new ResponseDTO(ResponseCode.CERTIFICATE_EXPIRED, ResponseMessage.CERTIFICATE_EXPIRED);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody);
     }
 }

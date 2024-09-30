@@ -43,7 +43,7 @@ public class WebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/","/member/**","/oauth2/**").permitAll()
+                        .requestMatchers("/","/member/email-check","/member/email-certification","/member/check-certification","/member/sign-in","/member/sign-up","/member/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2-> oauth2

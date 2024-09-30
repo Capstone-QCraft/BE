@@ -5,6 +5,7 @@ public interface ResponseCode {
 
     String VALIDATION_FAILED = "VF";
     String DUPLICATE_EMAIL = "DE";
+    String PASSWORD_MISMATCH = "PWM";
 
     String SIGN_IN_FAILED = "SF";
     String CERTIFICATE_EXPIRED = "CE";

@@ -11,9 +11,6 @@ public class SignInResponseDTO extends ResponseDTO {
 
     private String accessToken;
 
-
-
-
     private SignInResponseDTO(String accessToken) {
         super();
         this.accessToken = accessToken;
@@ -29,5 +26,8 @@ public class SignInResponseDTO extends ResponseDTO {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseBody);
     }
 
-
+    public static ResponseEntity<ResponseDTO> passwordMismatch() {
+        ResponseDTO responseBody = new ResponseDTO(ResponseCode.PASSWORD_MISMATCH, ResponseMessage.PASSWORD_MISMATCH);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseBody);
+    }
 }

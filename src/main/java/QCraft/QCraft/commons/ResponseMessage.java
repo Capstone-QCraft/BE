@@ -5,6 +5,7 @@ public interface ResponseMessage {
 
     String VALIDATION_FAILED = "validation failed";
     String DUPLICATE_EMAIL = "duplicate email";
+    String PASSWORD_MISMATCH = "password mismatch";
 
     String SIGN_IN_FAILED = "sign in failed";
     String CERTIFICATE_EXPIRED = "certificate expired";

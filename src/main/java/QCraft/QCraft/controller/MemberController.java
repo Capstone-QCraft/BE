@@ -5,6 +5,7 @@ import QCraft.QCraft.dto.response.*;
 import QCraft.QCraft.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.repository.Update;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +45,25 @@ public class MemberController {
     public ResponseEntity<? super SignInResponseDTO> signIn(@RequestBody @Valid SignInRequestDTO signInRequestDTO) {
         return memberService.signIn(signInRequestDTO);
     }
+
+    //회원정보 가져오기
+    @GetMapping("/get-info")
+    public ResponseEntity<? super GetMemberInfoResponseDTO> getMemberInfo() {
+        return memberService.getMemberInfo();
+    }
+
+    //회원정보 수정
+    @PutMapping("/update-info")
+    public ResponseEntity<? super UpdateMemberInfoResponseDTO> updateMemberInfo(@RequestBody @Valid UpdateMemberInfoRequestDTO updateMemberInfoRequestDTO) {
+        return memberService.updateMemberInfo(updateMemberInfoRequestDTO);
+    }
+
+    //회원탈퇴
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<? super WithdrawMemberResponseDTO> withdraw(){
+        return memberService.withdraw();
+    }
+
 
 
 

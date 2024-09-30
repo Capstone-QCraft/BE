@@ -27,6 +27,4 @@ public class SignUpRequestDTO {
     @NotBlank
     private String certificationNumber;
 
-
-
 }
