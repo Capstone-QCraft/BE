@@ -1,7 +1,7 @@
 package QCraft.QCraft.service;
 
-import QCraft.QCraft.dto.request.*;
-import QCraft.QCraft.dto.response.*;
+import QCraft.QCraft.dto.request.member.*;
+import QCraft.QCraft.dto.response.member.*;
 import org.springframework.http.ResponseEntity;
 
 public interface MemberService {

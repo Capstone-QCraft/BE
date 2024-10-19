@@ -2,8 +2,8 @@ package QCraft.QCraft.service.impl;
 
 import QCraft.QCraft.domain.Certification;
 import QCraft.QCraft.domain.Member;
-import QCraft.QCraft.dto.request.*;
-import QCraft.QCraft.dto.response.*;
+import QCraft.QCraft.dto.request.member.*;
+import QCraft.QCraft.dto.response.member.*;
 import QCraft.QCraft.email.CertificationNumber;
 import QCraft.QCraft.email.EmailUtils;
 import QCraft.QCraft.jwt.JwtUtils;

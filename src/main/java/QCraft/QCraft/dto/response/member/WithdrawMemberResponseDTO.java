@@ -1,4 +1,4 @@
-package QCraft.QCraft.dto.response;
+package QCraft.QCraft.dto.response.member;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

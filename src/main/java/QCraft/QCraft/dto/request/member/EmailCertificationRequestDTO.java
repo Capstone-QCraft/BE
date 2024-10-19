@@ -1,4 +1,4 @@
-package QCraft.QCraft.dto.request;
+package QCraft.QCraft.dto.request.member;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,13 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CheckCertificationRequestDTO {
-
+public class EmailCertificationRequestDTO {
     @Email
     @NotBlank
-    public String email;
-
-    @NotBlank
-    public String certificationNumber;
-
+    private String email;
 }

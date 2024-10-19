@@ -1,4 +1,4 @@
-package QCraft.QCraft.dto.response;
+package QCraft.QCraft.dto.response.member;
 
 
 import QCraft.QCraft.commons.ResponseCode;

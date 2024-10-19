@@ -38,40 +38,46 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
 
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
 
-        Member member = null;
         String userEmail = null;
         String userName = null;
+        String provider = oAuth2UserRequest.getClientRegistration().getRegistrationId();
 
-        switch (oAuth2UserRequest.getClientRegistration().getRegistrationId()) {
+        switch (provider) {
             case "google":
                 userEmail = (String) oAuth2User.getAttributes().get("email");
                 userName = (String) oAuth2User.getAttributes().get("name");
-                member = new Member(userEmail,userName,"google");
-                System.out.println(userEmail+" "+userName);
+                //member = new Member(userEmail,userName,"google");
                 break;
-            case "kakao" :
+            case "kakao":
                 Map<String, Object> kakaoAccount = (Map<String, Object>) oAuth2User.getAttributes().get("kakao_account");
                 Map<String, Object> kakaoProperties = (Map<String, Object>) oAuth2User.getAttributes().get("properties");
 
                 userEmail = (String) kakaoAccount.get("email");
                 userName = (String) kakaoProperties.get("nickname");
-                member = new Member(userEmail, userName, "kakao");
-                System.out.println(userEmail + " " + userName);
+                //member = new Member(userEmail, userName, "kakao");
                 break;
-            case "naver" :
-                Map<String, String> response = (Map<String, String>)oAuth2User.getAttributes().get("response");
+            case "naver":
+                Map<String, String> response = (Map<String, String>) oAuth2User.getAttributes().get("response");
                 userEmail = response.get("email");
                 userName = response.get("name");
-                member = new Member(userEmail, userName, "naver");
-                System.out.println(userEmail+" "+userName);
+                //member = new Member(userEmail, userName, "naver");
 
                 break;
             default:
                 throw new OAuth2AuthenticationException("Unsupported registration ID: " + oAuth2UserRequest.getClientRegistration().getRegistrationId());
 
         }
+        System.out.println(userEmail + " " + userName);
 
-        memberRepository.save(member);
+        String finalUserEmail = userEmail;
+        String finalUserName = userName;
+
+        Member member = memberRepository.findByEmail(userEmail)
+                .orElseGet(() -> {
+                    Member newMember = new Member(finalUserEmail, finalUserName, provider);
+                    return memberRepository.save(newMember);
+                });
+
         return new CustomOAuth2User(userEmail);
     }
 
