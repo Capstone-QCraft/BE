@@ -1,8 +1,7 @@
-package QCraft.QCraft.dto.response;
+package QCraft.QCraft.dto.response.member;
 
 import QCraft.QCraft.commons.ResponseCode;
 import QCraft.QCraft.commons.ResponseMessage;
-import QCraft.QCraft.dto.request.SignUpRequestDTO;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

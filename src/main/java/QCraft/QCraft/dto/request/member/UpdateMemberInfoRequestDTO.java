@@ -1,4 +1,4 @@
-package QCraft.QCraft.dto.request;
+package QCraft.QCraft.dto.request.member;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;

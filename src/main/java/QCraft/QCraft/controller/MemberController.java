@@ -1,11 +1,10 @@
 package QCraft.QCraft.controller;
 
-import QCraft.QCraft.dto.request.*;
-import QCraft.QCraft.dto.response.*;
+import QCraft.QCraft.dto.request.member.*;
+import QCraft.QCraft.dto.response.member.*;
 import QCraft.QCraft.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.mongodb.repository.Update;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +16,7 @@ public class MemberController {
 
 
     //이메일 중복체크
-    @GetMapping("/email-check")
+    @PostMapping("/email-check")
     public ResponseEntity<? super EmailCheckResponseDTO> EmailCheck(@RequestBody @Valid EmailCheckRequestDTO emailCheckRequestDTO) {
         return memberService.emailCheck(emailCheckRequestDTO);
     }

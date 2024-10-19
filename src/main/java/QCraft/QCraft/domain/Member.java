@@ -1,6 +1,6 @@
 package QCraft.QCraft.domain;
 
-import QCraft.QCraft.dto.request.SignUpRequestDTO;
+import QCraft.QCraft.dto.request.member.SignUpRequestDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
