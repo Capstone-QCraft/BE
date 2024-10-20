@@ -15,4 +15,7 @@ public interface ResponseCode {
 
     String EXPIRED_TOKEN = "ET";
 
+    String FILE_ERROR = "FIE";
+    String FILE_NOT_FOUND = "FIN";
+
 }

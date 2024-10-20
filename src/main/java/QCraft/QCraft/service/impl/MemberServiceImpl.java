@@ -9,6 +9,7 @@ import QCraft.QCraft.email.EmailUtils;
 import QCraft.QCraft.jwt.JwtUtils;
 import QCraft.QCraft.repository.CertificationRepository;
 import QCraft.QCraft.repository.MemberRepository;
+import QCraft.QCraft.service.GetAuthenticationService;
 import QCraft.QCraft.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,8 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final CertificationRepository certificationRepository;
+
+    private final GetAuthenticationService getAuthenticationService;
 
     private final EmailUtils emailUtils;
     private final JwtUtils jwtUtils;
@@ -197,29 +200,22 @@ public class MemberServiceImpl implements MemberService {
     //회원정보 불러오기
     @Override
     public ResponseEntity<? super GetMemberInfoResponseDTO> getMemberInfo() {
-        Member memberEntity;
+        Optional<Member> memberOptional;
+        Member member;
         try{
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if(authentication == null || authentication.getPrincipal() == null) {
-                System.out.println("1");
-                return GetMemberInfoResponseDTO.memberNotFound();
+            memberOptional = getAuthenticationService.getAuthentication();
+            if(memberOptional.isEmpty()){
+                return ResponseDTO.databaseError();
             }
 
-            String memberId = (String) authentication.getPrincipal();
+            member = memberOptional.get();
 
-            Optional<Member> member = memberRepository.findById(memberId);
-            if (member.isEmpty()) {
-                System.out.println("2");
-                return GetMemberInfoResponseDTO.memberNotFound();
-            }
-
-            memberEntity = member.get();
 
         }catch (Exception e){
             e.printStackTrace();
             return ResponseDTO.databaseError();
         }
-        return GetMemberInfoResponseDTO.success(memberEntity);
+        return GetMemberInfoResponseDTO.success(member);
     }
 
 

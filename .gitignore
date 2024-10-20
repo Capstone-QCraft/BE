@@ -22,6 +22,9 @@ application-db.properties
 application-jwt.properties
 application-mail.properties
 application-oauth.properties
+src/main/resources/static/files/*
+!src/main/resources/static/files/
+!src/main/resources/static/files/dummy
 .idea
 *.iws
 *.iml
@@ -39,3 +42,4 @@ out/
 
 ### VS Code ###
 .vscode/
+

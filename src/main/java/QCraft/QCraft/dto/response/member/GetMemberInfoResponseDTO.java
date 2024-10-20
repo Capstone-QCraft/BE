@@ -4,10 +4,12 @@ import QCraft.QCraft.commons.ResponseCode;
 import QCraft.QCraft.commons.ResponseMessage;
 import QCraft.QCraft.domain.Member;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Getter
+@NoArgsConstructor
 public class GetMemberInfoResponseDTO extends ResponseDTO {
     private String email;
     private String name;
