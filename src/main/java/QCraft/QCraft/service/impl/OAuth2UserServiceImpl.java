@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 
 
 @Service
@@ -72,8 +73,12 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
         String finalUserEmail = userEmail;
         String finalUserName = userName;
 
-        Member member = memberRepository.findByEmail(userEmail)
-                .orElseGet(() -> {
+        Optional<Member> optionalMember = memberRepository.findByEmail(finalUserEmail);
+        if(optionalMember.isPresent()&&!optionalMember.get().getType().equals(provider)) {
+            throw new OAuth2AuthenticationException("Email already in use");
+        }
+
+        Member member = optionalMember.orElseGet(() -> {
                     Member newMember = new Member(finalUserEmail, finalUserName, provider);
                     return memberRepository.save(newMember);
                 });

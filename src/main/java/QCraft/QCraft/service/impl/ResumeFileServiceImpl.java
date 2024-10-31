@@ -2,22 +2,22 @@ package QCraft.QCraft.service.impl;
 
 import QCraft.QCraft.domain.Member;
 import QCraft.QCraft.domain.ResumeFile;
+import QCraft.QCraft.domain.ResumeFileText;
 import QCraft.QCraft.dto.request.file.UploadFileRequestDTO;
 import QCraft.QCraft.dto.response.file.UploadFileResponseDTO;
 import QCraft.QCraft.dto.response.member.ResponseDTO;
 import QCraft.QCraft.repository.MemberRepository;
 import QCraft.QCraft.repository.ResumeFileRepository;
+import QCraft.QCraft.repository.ResumeFileTextRepository;
 import QCraft.QCraft.service.GetAuthenticationService;
 import QCraft.QCraft.service.ResumeFileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,8 +30,10 @@ import java.util.UUID;
 public class ResumeFileServiceImpl implements ResumeFileService {
     private final ResumeFileRepository resumeFileRepository;
     private final MemberRepository memberRepository;
+    private final ResumeFileTextRepository resumeFileTextRepository;
 
     private final GetAuthenticationService getAuthenticationService;
+    private final ResumeFileTextServiceImpl resumeFileTextService;
 
     private final Environment environment;
 
@@ -51,17 +53,31 @@ public class ResumeFileServiceImpl implements ResumeFileService {
             if(file.isEmpty()){
                 return UploadFileResponseDTO.fileNotFound();
             }
-            String filename = UUID.randomUUID().toString()+"_"+file.getOriginalFilename();
+            String filename = UUID.randomUUID()+"_"+file.getOriginalFilename();
             String filePath = saveFile(file, filename);
+            String extension = filename.substring(filename.lastIndexOf(".")+1).toLowerCase();
 
-            ResumeFile resumeFile = createResumeFile(filename, filePath);
+
+            ResumeFile resumeFile = createResumeFile(filename, filePath, extension);
+            ResumeFileText resumeFileText = resumeFileTextService.createResumeFileText(resumeFile, extension);
+
+            if(resumeFileText == null){
+                System.out.println("1");
+                return UploadFileResponseDTO.fileError();
+            }
+
+            if(resumeFileText.getContent().equals("python_error")){
+                return UploadFileResponseDTO.fileError();
+            }
 
             resumeFileRepository.save(resumeFile);
+            resumeFileTextRepository.save(resumeFileText);
 
             return UploadFileResponseDTO.success(filename, filePath);
 
         }catch (IOException e){
             e.printStackTrace();
+            System.out.println("2");
             return UploadFileResponseDTO.fileError();
         } catch (Exception e) {
             e.printStackTrace();
@@ -96,10 +112,11 @@ public class ResumeFileServiceImpl implements ResumeFileService {
         }
     }
 
-    private ResumeFile createResumeFile(String filename, String filePath) throws Exception {
+    private ResumeFile createResumeFile(String filename, String filePath, String extension) throws Exception {
         ResumeFile resumeFile = new ResumeFile();
         resumeFile.setFilename(filename);
         resumeFile.setPath(filePath);
+        resumeFile.setExtension(extension);
 
 
         String memberId = getAuthenticationService.getAuthentication().get().getId();
@@ -111,4 +128,6 @@ public class ResumeFileServiceImpl implements ResumeFileService {
         return resumeFile;
 
     }
+
+
 }
