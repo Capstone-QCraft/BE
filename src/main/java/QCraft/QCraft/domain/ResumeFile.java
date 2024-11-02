@@ -6,6 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
+
 @Data
 @Document(collection = "file")
 @NoArgsConstructor
@@ -19,6 +21,8 @@ public class ResumeFile {
     private String path; //저장 경로
 
     private String extension; //확장자
+
+    private Date uploadDate; //업로드 시간
 
     @DBRef
     private Member member;

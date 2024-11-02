@@ -4,6 +4,9 @@ import QCraft.QCraft.domain.Member;
 import QCraft.QCraft.domain.ResumeFile;
 import QCraft.QCraft.domain.ResumeFileText;
 import QCraft.QCraft.dto.request.file.UploadFileRequestDTO;
+import QCraft.QCraft.dto.response.file.DeleteFileResponseDTO;
+import QCraft.QCraft.dto.response.file.GetFileListResponseDTO;
+import QCraft.QCraft.dto.response.file.GetFileResponseDTO;
 import QCraft.QCraft.dto.response.file.UploadFileResponseDTO;
 import QCraft.QCraft.dto.response.member.ResponseDTO;
 import QCraft.QCraft.repository.MemberRepository;
@@ -23,6 +26,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -47,35 +53,36 @@ public class ResumeFileServiceImpl implements ResumeFileService {
 
     @Override
     public ResponseEntity<? super UploadFileResponseDTO> uploadFile(UploadFileRequestDTO uploadFileRequestDTO) {
-        try{
+        try {
             MultipartFile file = uploadFileRequestDTO.getFile();
 
-            if(file.isEmpty()){
+            if (file.isEmpty()) {
                 return UploadFileResponseDTO.fileNotFound();
             }
-            String filename = UUID.randomUUID()+"_"+file.getOriginalFilename();
+            String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
             String filePath = saveFile(file, filename);
-            String extension = filename.substring(filename.lastIndexOf(".")+1).toLowerCase();
+            String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+            Date currentDate = new Date();
 
 
-            ResumeFile resumeFile = createResumeFile(filename, filePath, extension);
+            ResumeFile resumeFile = createResumeFile(filename, filePath, extension, currentDate);
             ResumeFileText resumeFileText = resumeFileTextService.createResumeFileText(resumeFile, extension);
 
-            if(resumeFileText == null){
+            if (resumeFileText == null) {
                 System.out.println("1");
                 return UploadFileResponseDTO.fileError();
             }
 
-            if(resumeFileText.getContent().equals("python_error")){
+            if (resumeFileText.getContent().equals("python_error")) {
                 return UploadFileResponseDTO.fileError();
             }
 
             resumeFileRepository.save(resumeFile);
             resumeFileTextRepository.save(resumeFileText);
 
-            return UploadFileResponseDTO.success(filename, filePath);
+            return UploadFileResponseDTO.success(filename, filePath, currentDate);
 
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             System.out.println("2");
             return UploadFileResponseDTO.fileError();
@@ -87,11 +94,72 @@ public class ResumeFileServiceImpl implements ResumeFileService {
 
     }
 
+    @Override
+    public ResponseEntity<? super GetFileResponseDTO> getFile(String fileId) {
+        try {
+            Optional<ResumeFile> resumeFileOptional = resumeFileRepository.findById(fileId);
+            if (resumeFileOptional.isEmpty()) {
+                return GetFileResponseDTO.fileNotFound();
+            }
+
+            ResumeFile resumeFile = resumeFileOptional.get();
+
+            String filename = resumeFile.getFilename();
+            String filePath = resumeFile.getPath();
+            Date uploadedDate = resumeFile.getUploadDate();
+
+            return GetFileResponseDTO.success(filename, filePath, uploadedDate);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDTO.databaseError();
+        }
+    }
+
+    @Override
+    public ResponseEntity<? super GetFileListResponseDTO> getFileList() {
+        try {
+            Member member = getAuthenticationService.getAuthentication().get();
+            Optional<List<ResumeFile>> resumeFileListOptional = resumeFileRepository.findByMember(member);
+
+            if (resumeFileListOptional.isEmpty()) {
+                return GetFileListResponseDTO.fileNotFound();
+            }
+            List<ResumeFile> resumeFileList = resumeFileListOptional.get();
+
+            return GetFileListResponseDTO.success(resumeFileList);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDTO.databaseError();
+        }
+    }
+
+    @Override
+    public ResponseEntity<? super DeleteFileResponseDTO> deleteFile(String fileId) {
+        try {
+            Optional<ResumeFile> resumeFileOptional = resumeFileRepository.findById(fileId);
+            if (resumeFileOptional.isEmpty()) {
+                return DeleteFileResponseDTO.fileNotFound();
+            }
+
+            ResumeFile resumeFile = resumeFileOptional.get();
+            resumeFileTextRepository.deleteByResumeFile(resumeFile);
+            resumeFileRepository.delete(resumeFile);
+
+            return DeleteFileResponseDTO.success();
+        }catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDTO.databaseError();
+        }
+
+    }
 
 
     private String saveFile(MultipartFile file, String filename) throws IOException {
         Path uploadPath = getUploadPath();
-        if(!Files.exists(uploadPath)){
+        if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
 
@@ -112,21 +180,21 @@ public class ResumeFileServiceImpl implements ResumeFileService {
         }
     }
 
-    private ResumeFile createResumeFile(String filename, String filePath, String extension) throws Exception {
+    private ResumeFile createResumeFile(String filename, String filePath, String extension, Date currentDate) throws Exception {
         ResumeFile resumeFile = new ResumeFile();
         resumeFile.setFilename(filename);
         resumeFile.setPath(filePath);
         resumeFile.setExtension(extension);
+        resumeFile.setUploadDate(currentDate);
 
 
         String memberId = getAuthenticationService.getAuthentication().get().getId();
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(()-> new RuntimeException("Member not found"));
+                .orElseThrow(() -> new RuntimeException("Member not found"));
         resumeFile.setMember(member);
 
         return resumeFile;
-
     }
 
 
