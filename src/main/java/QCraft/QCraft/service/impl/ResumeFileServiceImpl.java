@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +63,7 @@ public class ResumeFileServiceImpl implements ResumeFileService {
             String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
             String filePath = saveFile(file, filename);
             String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
-            Date currentDate = new Date();
+            LocalDateTime currentDate = LocalDateTime.now();
 
 
             ResumeFile resumeFile = createResumeFile(filename, filePath, extension, currentDate);
@@ -106,7 +107,7 @@ public class ResumeFileServiceImpl implements ResumeFileService {
 
             String filename = resumeFile.getFilename();
             String filePath = resumeFile.getPath();
-            Date uploadedDate = resumeFile.getUploadDate();
+            LocalDateTime uploadedDate = resumeFile.getUploadDate();
 
             return GetFileResponseDTO.success(filename, filePath, uploadedDate);
 
@@ -180,21 +181,15 @@ public class ResumeFileServiceImpl implements ResumeFileService {
         }
     }
 
-    private ResumeFile createResumeFile(String filename, String filePath, String extension, Date currentDate) throws Exception {
-        ResumeFile resumeFile = new ResumeFile();
-        resumeFile.setFilename(filename);
-        resumeFile.setPath(filePath);
-        resumeFile.setExtension(extension);
-        resumeFile.setUploadDate(currentDate);
+    private ResumeFile createResumeFile(String filename, String filePath, String extension, LocalDateTime currentDate) throws Exception {
 
 
         String memberId = getAuthenticationService.getAuthentication().get().getId();
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
-        resumeFile.setMember(member);
 
-        return resumeFile;
+        return new ResumeFile(filename, filePath, extension, member);
     }
 
 

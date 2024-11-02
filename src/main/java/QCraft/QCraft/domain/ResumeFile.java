@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @Document(collection = "file")
@@ -22,8 +22,16 @@ public class ResumeFile {
 
     private String extension; //확장자
 
-    private Date uploadDate; //업로드 시간
+    private LocalDateTime uploadDate; //업로드 시간
 
     @DBRef
     private Member member;
+
+    public ResumeFile(String filename, String path, String extension, Member member) {
+        this.filename = filename;
+        this.path = path;
+        this.extension = extension;
+        this.uploadDate = LocalDateTime.now();
+        this.member = member;
+    }
 }
