@@ -22,6 +22,8 @@ application-db.properties
 application-jwt.properties
 application-mail.properties
 application-oauth.properties
+application-claude.properties
+
 src/main/resources/static/files/*
 !src/main/resources/static/files/
 !src/main/resources/static/files/dummy
@@ -42,4 +44,5 @@ out/
 
 ### VS Code ###
 .vscode/
+
 
