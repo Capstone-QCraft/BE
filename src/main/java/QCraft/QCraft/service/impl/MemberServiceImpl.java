@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -249,6 +250,8 @@ public class MemberServiceImpl implements MemberService {
             if (name != null && !name.isEmpty()) {
                 memberEntity.setName(name); // 이름 수정
             }
+
+            memberEntity.setUpdatedAt(LocalDateTime.now());
 
             memberRepository.save(memberEntity);
 

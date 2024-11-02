@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -15,16 +16,16 @@ import java.util.Date;
 public class GetFileResponseDTO extends ResponseDTO {
     private String fileName;
     private String filePath;
-    private Date uploadTime;
+    private LocalDateTime uploadTime;
 
-    public GetFileResponseDTO(String fileName, String filePath, Date uploadTime) {
+    public GetFileResponseDTO(String fileName, String filePath, LocalDateTime uploadTime) {
         super();
         this.fileName = fileName;
         this.filePath = filePath;
         this.uploadTime = uploadTime;
     }
 
-    public static ResponseEntity<GetFileResponseDTO> success(String fileName, String filePath, Date uploadTime) {
+    public static ResponseEntity<GetFileResponseDTO> success(String fileName, String filePath, LocalDateTime uploadTime) {
         GetFileResponseDTO responseDTO = new GetFileResponseDTO(fileName, filePath, uploadTime);
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
