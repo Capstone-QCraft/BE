@@ -81,7 +81,7 @@ public class ResumeFileServiceImpl implements ResumeFileService {
             resumeFileRepository.save(resumeFile);
             resumeFileTextRepository.save(resumeFileText);
 
-            return UploadFileResponseDTO.success(filename, filePath, currentDate);
+            return UploadFileResponseDTO.success(resumeFile);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -91,8 +91,6 @@ public class ResumeFileServiceImpl implements ResumeFileService {
             e.printStackTrace();
             return ResponseDTO.databaseError();
         }
-
-
     }
 
     @Override

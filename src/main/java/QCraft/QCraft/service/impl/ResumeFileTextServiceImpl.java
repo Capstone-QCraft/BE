@@ -19,8 +19,6 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ResumeFileTextServiceImpl implements ResumeFileTextService {
-    private final ResumeFileTextRepository resumeFileTextRepository;
-
 
     @Override
     public ResumeFileText createResumeFileText(ResumeFile resumeFile, String extension) {
