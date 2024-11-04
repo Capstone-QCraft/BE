@@ -42,7 +42,8 @@ public class ClaudeApiService {
                 "Avoid yes/no questions or those with obvious answers. " +
                 "Instead, focus on questions that encourage reflection, self-assessment, and the sharing of specific examples or anecdotes. " +
                 "Since the text extracted from the file is passed as is, do not consider useless content when generate a question. " +
-                "Please provide each question separated by a newline (\\n). Generate in Korean.";
+                "Generate in Korean."+
+                "form: 1.question1\\n2.question2\\n3.question1\\3";
 
 
         StringBuilder promptBuilder = new StringBuilder();
@@ -64,6 +65,7 @@ public class ClaudeApiService {
         try {
             ClaudeResponseDTO responseDTO = claudeRestTemplate.postForObject(apiUrl, requestDTO, ClaudeResponseDTO.class);
             if (responseDTO != null && responseDTO.getContent() != null) {
+                System.out.println(responseDTO.getContent().toString());
                 return responseDTO.getContent().stream()
                         .map(ClaudeResponseDTO.Content::getText)
                         .collect(Collectors.toList());
@@ -85,8 +87,8 @@ public class ClaudeApiService {
 
         StringBuilder promptBuilder = new StringBuilder();
         for (int i = 0; i < questions.size(); i++) {
-            promptBuilder.append(String.format("Question %d: %s\n", i + 1, questions.get(i).replace("\n","")));
-            promptBuilder.append(String.format("Answer: %d: %s\n", i + 1, answers.get(i).replace("\n","")));
+            promptBuilder.append(String.format("Question %d: %s\n", i + 1, questions.get(i)));
+            promptBuilder.append(String.format("Answer: %d: %s\n", i + 1, answers.get(i)));
             promptBuilder.append("\n");
         }
 

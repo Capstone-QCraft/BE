@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,13 +46,19 @@ public class InterviewServiceImpl implements InterviewService {
                 return ResponseDTO.databaseError();
             }
 
+            Optional<Interview> interviewOptional = interviewRepository.findInterviewsByResumeFile(resumeFileOptional.get());
+            if(interviewOptional.isPresent()) {
+                return CreateInterviewResponseDTO.failCreate();
+            }
+
             List<String> question = claudeApiService.getInterviewQuestions(resumeFileTextOptional.get().getContent());
 
             List<String> questions = new ArrayList<>();
             for(String q : question){
-                String[] splitByNewLine = q.split("\n");
+                String[] splitByNewLine = q.split("\n\n");
                 questions.addAll(Arrays.asList(splitByNewLine));
             }
+
 
             Interview interview = new Interview();
             interview.setQuestions(questions);

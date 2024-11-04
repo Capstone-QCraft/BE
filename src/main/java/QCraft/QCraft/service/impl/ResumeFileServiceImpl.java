@@ -85,7 +85,6 @@ public class ResumeFileServiceImpl implements ResumeFileService {
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("2");
             return UploadFileResponseDTO.fileError();
         } catch (Exception e) {
             e.printStackTrace();

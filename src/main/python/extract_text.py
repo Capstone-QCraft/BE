@@ -5,7 +5,6 @@ import os
 import subprocess
 import tempfile
 import aspose.words as aw
-from sympy import false
 
 
 def doc_to_docx(file_path):
