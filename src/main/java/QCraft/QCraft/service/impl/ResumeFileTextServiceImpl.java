@@ -32,7 +32,7 @@ public class ResumeFileTextServiceImpl implements ResumeFileTextService {
                 return null;
             }
 
-            saveExtractedTextToFile(content, resumeFile);
+            //saveExtractedTextToFile(content, resumeFile);
 
             resumeFileText.setContent(content);
             resumeFileText.setResumeFile(resumeFile);

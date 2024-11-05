@@ -81,9 +81,26 @@ public class ClaudeApiService {
     public List<String> getFeedbackForAnswers(List<String> questions, List<String> answers) {
         List<ClaudeRequestDTO.Message> messages = new ArrayList<>();
 
-        String systemPrompt = "Please analyze the following interview questions and answers to provide feedback. " +
+        StringBuilder systemPrompt = new StringBuilder();
+        systemPrompt.append("Please analyze the following interview questions and answers to provide feedback. " +
                 "Do not give evaluation scores or anything like that."+
-                "Provide detailed feedback focusing on clarity, content, and areas for improvement. Generate in Korean.";
+                "Provide detailed feedback focusing on clarity, content, and areas for improvement. Generate in Korean.");
+        systemPrompt.append("\n\n");
+        systemPrompt.append("Please write your feedback using the following format(The number of each feedback is irrelevant.):\n");
+        systemPrompt.append("각 답변에 대한 구체적인 피드백을 제공하겠습니다.\n");
+        systemPrompt.append("답변 (답변번호)에 대한 피드백\n");
+        systemPrompt.append("긍정적 측면:\n");
+        systemPrompt.append("1. your feedback\n");
+        systemPrompt.append("2. your feedback\n");
+        systemPrompt.append("3. your feedback\n");
+        systemPrompt.append("개선이 필요한 부분:\n");
+        systemPrompt.append("1. your feedback\n");
+        systemPrompt.append("2. your feedback\n");
+        systemPrompt.append("3. your feedback\n");
+        systemPrompt.append("전반적인 제언\n");
+        systemPrompt.append("1. your feedback\n");
+        systemPrompt.append("2. your feedback\n");
+        systemPrompt.append("3. your feedback\n");
 
         StringBuilder promptBuilder = new StringBuilder();
         for (int i = 0; i < questions.size(); i++) {
@@ -107,7 +124,7 @@ public class ClaudeApiService {
                 .model("claude-3-5-sonnet-20241022")
                 .maxTokens(1000)
                 .temperature(0.5)
-                .system(systemPrompt)
+                .system(systemPrompt.toString())
                 .messages(messages)
                 .build();
 
