@@ -27,7 +27,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,14 +41,8 @@ public class ResumeFileServiceImpl implements ResumeFileService {
     private final GetAuthenticationService getAuthenticationService;
     private final ResumeFileTextServiceImpl resumeFileTextService;
 
-    private final Environment environment;
-
-    @Value("${file.upload.directory.dev}")
-    private String devUploadDirectory;
-
-    // 배포 환경 경로
-    @Value("${file.upload.directory.prod}")
-    private String prodUploadDirectory;
+    @Value("${file.upload.directory}")
+    private String uploadDirectory;
 
 
     @Override
@@ -156,7 +149,7 @@ public class ResumeFileServiceImpl implements ResumeFileService {
 
 
     private String saveFile(MultipartFile file, String filename) throws IOException {
-        Path uploadPath = getUploadPath();
+        Path uploadPath = Paths.get(uploadDirectory);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
@@ -168,15 +161,7 @@ public class ResumeFileServiceImpl implements ResumeFileService {
         return filePath.toString();
     }
 
-    private Path getUploadPath() {
-        if (environment.acceptsProfiles("prod")) {
-            // 배포 환경
-            return Paths.get(prodUploadDirectory);
-        } else {
-            // 개발 환경
-            return Paths.get(System.getProperty("user.dir"), devUploadDirectory);
-        }
-    }
+
 
     private ResumeFile createResumeFile(String filename, String filePath, String extension, LocalDateTime currentDate) throws Exception {
 

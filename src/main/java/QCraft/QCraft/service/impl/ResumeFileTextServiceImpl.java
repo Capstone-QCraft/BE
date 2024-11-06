@@ -5,6 +5,7 @@ import QCraft.QCraft.domain.ResumeFileText;
 import QCraft.QCraft.repository.ResumeFileTextRepository;
 import QCraft.QCraft.service.ResumeFileTextService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -19,6 +20,12 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ResumeFileTextServiceImpl implements ResumeFileTextService {
+
+    @Value("${python.script.path}")
+    private String pythonScriptPath;
+
+    @Value("${python.script.command}")
+    private String pythonScriptCommand;
 
     @Override
     public ResumeFileText createResumeFileText(ResumeFile resumeFile, String extension) {
@@ -47,10 +54,9 @@ public class ResumeFileTextServiceImpl implements ResumeFileTextService {
 
     private String runPythonScript(String extension, ResumeFile resumeFile) {
         try{
-            String scriptPath = "src/main/python/extract_text.py";
             String resumeFilePath = resumeFile.getPath();
 
-            ProcessBuilder processBuilder = new ProcessBuilder("python", scriptPath, extension, resumeFilePath);
+            ProcessBuilder processBuilder = new ProcessBuilder(pythonScriptCommand, pythonScriptPath, extension, resumeFilePath);
             processBuilder.environment().put("PYTHONIOENCODING", "UTF-8");
             processBuilder.redirectErrorStream(true);
 
@@ -79,7 +85,6 @@ public class ResumeFileTextServiceImpl implements ResumeFileTextService {
 
         } catch (Exception e){
             e.printStackTrace();
-            System.out.println("888");
             return null;
         }
     }
