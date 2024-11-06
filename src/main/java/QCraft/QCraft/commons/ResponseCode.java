@@ -18,4 +18,9 @@ public interface ResponseCode {
     String FILE_ERROR = "FIE";
     String FILE_NOT_FOUND = "FIN";
 
+    String QUESTION_GENERATION_FAILED = "QGF";
+    String FEEDBACK_GENERATION_FAILED = "FEGF";
+    String CLAUDE_ERROR = "CLA";
+    String INTERVIEW_NOT_FOUND = "INF";
+
 }

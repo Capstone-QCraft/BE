@@ -2,6 +2,7 @@ package QCraft.QCraft.dto.response.file;
 
 import QCraft.QCraft.commons.ResponseCode;
 import QCraft.QCraft.commons.ResponseMessage;
+import QCraft.QCraft.domain.ResumeFile;
 import QCraft.QCraft.dto.response.member.CheckCertificationResponseDTO;
 import QCraft.QCraft.dto.response.member.ResponseDTO;
 import lombok.Getter;
@@ -15,19 +16,21 @@ import java.util.Date;
 @Getter
 @NoArgsConstructor
 public class UploadFileResponseDTO extends ResponseDTO {
+    private String fileId;
     private String fileName;
     private String filePath;
     private LocalDateTime uploadTime;
 
-    private UploadFileResponseDTO(String fileName, String filePath, LocalDateTime uploadTime) {
+    private UploadFileResponseDTO(String fileId, String fileName, String filePath, LocalDateTime uploadTime) {
         super();
+        this.fileId = fileId;
         this.fileName = fileName;
         this.filePath = filePath;
         this.uploadTime = uploadTime;
     }
 
-    public static ResponseEntity<UploadFileResponseDTO> success(String fileName, String filePath, LocalDateTime uploadTime) {
-        UploadFileResponseDTO responseDTO = new UploadFileResponseDTO(fileName, filePath, uploadTime);
+    public static ResponseEntity<UploadFileResponseDTO> success(ResumeFile resumeFile) {
+        UploadFileResponseDTO responseDTO = new UploadFileResponseDTO(resumeFile.getId(), resumeFile.getFilename(), resumeFile.getPath(), resumeFile.getUploadDate());
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 

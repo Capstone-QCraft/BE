@@ -17,4 +17,9 @@ public interface ResponseMessage {
 
     String FILE_ERROR = "file error";
     String FILE_NOT_FOUND = "file not found";
+
+    String QUESTION_GENERATION_FAILED = "question generation failed";
+    String FEEDBACK_GENERATION_FAILED = "feedback generation failed";
+    String CLAUDE_ERROR = "claude error";
+    String INTERVIEW_NOT_FOUND = "interview not found";
 }

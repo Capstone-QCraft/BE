@@ -14,13 +14,18 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
-@RequiredArgsConstructor
 public class JwtUtils {
 
     @Value("${secret-key}")
     private String secretKey;
     @Value("${expiration}")
     private long expiration;
+
+    @Value("${token.expiration.access}")
+    private long accessExpiration;
+    @Value("${token.expiration.refresh}")
+    private long refreshExpiration;
+
 
 
 
@@ -39,6 +44,8 @@ public class JwtUtils {
                 .compact();
 
     }
+
+
 
 
     //jwt검증
