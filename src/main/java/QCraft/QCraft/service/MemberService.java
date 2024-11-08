@@ -14,4 +14,5 @@ public interface MemberService {
     ResponseEntity<? super UpdateMemberInfoResponseDTO> updateMemberInfo(UpdateMemberInfoRequestDTO updateMemberInfoRequestDTO);
     ResponseEntity<? super GetMemberInfoResponseDTO> getMemberInfo();
     ResponseEntity<? super WithdrawMemberResponseDTO> withdraw();
+    ResponseEntity<? super RefreshTokenResponseDTO> refreshToken(RefreshTokenRequestDTO requestDTO);
 }

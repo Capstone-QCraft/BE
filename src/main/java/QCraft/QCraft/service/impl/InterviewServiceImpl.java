@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +32,7 @@ public class InterviewServiceImpl implements InterviewService {
     private final ClaudeApiService claudeApiService;
     private final GetAuthenticationService getAuthenticationService;
 
+    //질문생성
     @Override
     public ResponseEntity<? super CreateInterviewResponseDTO> generateInterviewQuestions(String resumeFileId) {
         try {
@@ -46,7 +46,7 @@ public class InterviewServiceImpl implements InterviewService {
                 return ResponseDTO.databaseError();
             }
 
-            Optional<Interview> interviewOptional = interviewRepository.findInterviewsByResumeFile(resumeFileOptional.get());
+            Optional<Interview> interviewOptional = interviewRepository.findByResumeFile(resumeFileOptional.get());
             if(interviewOptional.isPresent()) {
                 return CreateInterviewResponseDTO.failCreate();
             }
@@ -76,6 +76,7 @@ public class InterviewServiceImpl implements InterviewService {
         }
     }
 
+    //피드백 받기
     @Override
     public ResponseEntity<? super GetFeedbackResponseDTO> getFeedback(GetFeedbackRequestDTO requestDTO) {
         try {
@@ -100,10 +101,11 @@ public class InterviewServiceImpl implements InterviewService {
         }
     }
 
+    //인터뷰 리스트 불러오기
     @Override
     public ResponseEntity<? super GetInterviewListResponseDTO> getInterviewList() {
         try {
-            Optional<List<Interview>> interviewListOptional = interviewRepository.findInterviewsByMember(getAuthenticationService.getAuthentication().get());
+            Optional<List<Interview>> interviewListOptional = interviewRepository.findByMember(getAuthenticationService.getAuthentication().get());
             if (interviewListOptional.isEmpty()) {
                 return GetInterviewListResponseDTO.interviewNotFound();
             }
@@ -116,6 +118,7 @@ public class InterviewServiceImpl implements InterviewService {
         }
     }
 
+    //인터뷰 상세 불러오기
     @Override
     public ResponseEntity<? super GetInterviewResponseDTO> getInterview(String interviewId) {
         try{

@@ -26,6 +26,8 @@ public class Member {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private String refreshToken;
+
     public Member(SignUpRequestDTO signUpRequestDTO) {
         this.email = signUpRequestDTO.getEmail();
         this.password = signUpRequestDTO.getPassword();

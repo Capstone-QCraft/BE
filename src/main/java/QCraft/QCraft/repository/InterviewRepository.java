@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface InterviewRepository extends MongoRepository<Interview, String> {
-    Optional<List<Interview>> findInterviewsByMember(Member member);
-    Optional<Interview> findInterviewsByResumeFile(ResumeFile resumeFile);
+    Optional<List<Interview>> findByMember(Member member);
+    Optional<Interview> findByResumeFile(ResumeFile resumeFile);
+    void deleteByMember(Member member);
 }

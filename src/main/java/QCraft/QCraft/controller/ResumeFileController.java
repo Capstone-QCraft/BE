@@ -18,6 +18,7 @@ public class ResumeFileController {
 
     private final ResumeFileService resumeFileService;
 
+    //파일 업로드
     @PostMapping("/upload")
     public ResponseEntity<? super UploadFileResponseDTO> UploadFile(@RequestParam("file") MultipartFile file) {
         UploadFileRequestDTO uploadFileRequestDTO = new UploadFileRequestDTO();
@@ -25,16 +26,19 @@ public class ResumeFileController {
         return resumeFileService.uploadFile(uploadFileRequestDTO);
     }
 
+    //파일 리스트 불러오기
     @GetMapping("/list")
     public ResponseEntity<? super GetFileListResponseDTO> getFileList() {
         return resumeFileService.getFileList();
     }
 
+    //파일 상세 정보
     @GetMapping("/{ResumeFileid}")
     public ResponseEntity<? super GetFileResponseDTO> getFile(@PathVariable String ResumeFileid) {
         return resumeFileService.getFile(ResumeFileid);
     }
 
+    //파일 삭제
     @DeleteMapping("delete/{ResumeFileid}")
     public ResponseEntity<? super DeleteFileResponseDTO> deleteFile(@PathVariable String ResumeFileidid) {
         return resumeFileService.deleteFile(ResumeFileidid);

@@ -27,6 +27,7 @@ public class ResumeFileTextServiceImpl implements ResumeFileTextService {
     @Value("${python.script.command}")
     private String pythonScriptCommand;
 
+    //텍스트 파일 가져오기
     @Override
     public ResumeFileText createResumeFileText(ResumeFile resumeFile, String extension) {
         try{
@@ -52,6 +53,7 @@ public class ResumeFileTextServiceImpl implements ResumeFileTextService {
 
     }
 
+    //파이썬 스크립트 실행
     private String runPythonScript(String extension, ResumeFile resumeFile) {
         try{
             String resumeFilePath = resumeFile.getPath();

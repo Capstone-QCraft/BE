@@ -33,6 +33,7 @@ public class ClaudeApiService {
         this.claudeRestTemplate = claudeRestTemplate;
     }
 
+    //질문생성 template
     public List<String> getInterviewQuestions(String resumeContent) {
         List<ClaudeRequestDTO.Message> messages = new ArrayList<>();
 
@@ -78,6 +79,7 @@ public class ClaudeApiService {
         }
     }
 
+    //피드백 받기 template
     public List<String> getFeedbackForAnswers(List<String> questions, List<String> answers) {
         List<ClaudeRequestDTO.Message> messages = new ArrayList<>();
 

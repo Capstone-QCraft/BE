@@ -14,6 +14,7 @@ import java.time.Duration;
 @Configuration
 public class ClaudeApiConfig {
 
+    //claude api 템플릿 기본설정
     @Bean
     public RestTemplate claudeRestTemplate(RestTemplateBuilder builder, @Value("${claude.api.key}")String apiKey) {
         return builder

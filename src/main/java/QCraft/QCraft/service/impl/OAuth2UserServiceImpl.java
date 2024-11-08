@@ -23,6 +23,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
 
     private final MemberRepository memberRepository;
 
+    //oauth2 로그인요청 처리
     @Override
     public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(oAuth2UserRequest);
@@ -37,6 +38,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
         }
     }
 
+    //oauth2 사용자 정보 공급자별 분리 저장
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
 
         String userEmail = null;

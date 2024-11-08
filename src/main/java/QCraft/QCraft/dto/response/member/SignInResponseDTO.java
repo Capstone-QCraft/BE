@@ -3,21 +3,25 @@ package QCraft.QCraft.dto.response.member;
 import QCraft.QCraft.commons.ResponseCode;
 import QCraft.QCraft.commons.ResponseMessage;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Getter
+@Setter
 public class SignInResponseDTO extends ResponseDTO {
 
     private String accessToken;
+    private String refreshToken;
 
-    private SignInResponseDTO(String accessToken) {
+    private SignInResponseDTO(String accessToken, String refreshToken) {
         super();
         this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 
-    public static ResponseEntity<SignInResponseDTO> success(String accessToken) {
-        SignInResponseDTO responseBody = new SignInResponseDTO(accessToken);
+    public static ResponseEntity<SignInResponseDTO> success(String accessToken, String refreshToken) {
+        SignInResponseDTO responseBody = new SignInResponseDTO(accessToken, refreshToken);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 

@@ -2,13 +2,13 @@ package QCraft.QCraft.service.impl;
 
 import QCraft.QCraft.domain.Certification;
 import QCraft.QCraft.domain.Member;
+import QCraft.QCraft.domain.ResumeFile;
 import QCraft.QCraft.dto.request.member.*;
 import QCraft.QCraft.dto.response.member.*;
 import QCraft.QCraft.email.CertificationNumber;
 import QCraft.QCraft.email.EmailUtils;
 import QCraft.QCraft.jwt.JwtUtils;
-import QCraft.QCraft.repository.CertificationRepository;
-import QCraft.QCraft.repository.MemberRepository;
+import QCraft.QCraft.repository.*;
 import QCraft.QCraft.service.GetAuthenticationService;
 import QCraft.QCraft.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +18,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,6 +32,9 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final CertificationRepository certificationRepository;
+    private final InterviewRepository interviewRepository;
+    private final ResumeFileRepository resumeFileRepository;
+    private final ResumeFileTextRepository resumeFileTextRepository;
 
     private final GetAuthenticationService getAuthenticationService;
 
@@ -87,6 +94,7 @@ public class MemberServiceImpl implements MemberService {
 
             // 인증번호 업데이트
             certification.setCertificationNumber(certificationNumber);
+            certification.setCreatedAt(LocalDateTime.now());
 
             // 인증 정보 저장 (기존 인증 정보가 대체됨)
             certificationRepository.save(certification);
@@ -186,8 +194,13 @@ public class MemberServiceImpl implements MemberService {
 
 
             String memberId = member.get().getId();
-            accessToken = jwtUtils.createAccessToken(memberId);
+            List<String> memberRole = Collections.singletonList(member.get().getRole());
+            accessToken = jwtUtils.createAccessToken(memberId,memberRole);
+            refreshToken = jwtUtils.createRefreshToken(memberId);
 
+            member.get().setRefreshToken(refreshToken);
+
+            memberRepository.save(member.get());
 
 
         }catch (Exception e){
@@ -195,8 +208,31 @@ public class MemberServiceImpl implements MemberService {
             return ResponseDTO.databaseError();
         }
 
-        return SignInResponseDTO.success(accessToken);
+        return SignInResponseDTO.success(accessToken, refreshToken);
     }
+
+    //토큰 재발급
+    @Override
+    public ResponseEntity<? super RefreshTokenResponseDTO> refreshToken(RefreshTokenRequestDTO requestDTO){
+        try {
+            String oldRefreshToken = requestDTO.getRefreshToken();
+
+            List<String> tokens = jwtUtils.refreshToken(oldRefreshToken);
+            if(tokens == null || tokens.isEmpty()){
+                return RefreshTokenResponseDTO.expiredRefreshToken();
+            }
+
+            String newAccessToken = tokens.get(0);
+            String newRefreshToken = tokens.get(1);
+
+            return RefreshTokenResponseDTO.success(newAccessToken, newRefreshToken);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDTO.databaseError();
+        }
+
+    }
+
 
     //회원정보 불러오기
     @Override
@@ -265,22 +301,28 @@ public class MemberServiceImpl implements MemberService {
 
     //회원탈퇴
     @Override
+    @Transactional
     public ResponseEntity<? super WithdrawMemberResponseDTO> withdraw() {
-        Member memberEntity;
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if(authentication == null || authentication.getPrincipal() == null) {
-                return GetMemberInfoResponseDTO.memberNotFound();
-            }
-
-            String memberId = (String) authentication.getPrincipal();
-
-            Optional<Member> member = memberRepository.findById(memberId);
-            if (member.isEmpty()) {
+            Optional<Member> memberOptional = getAuthenticationService.getAuthentication();
+            if(memberOptional.isEmpty()){
                 return ResponseDTO.databaseError();
             }
-            memberEntity = member.get();
-            memberRepository.deleteById(memberEntity.getId());
+            Member member = memberOptional.get();
+
+
+            Optional<List<ResumeFile>> resumeFileOptional = resumeFileRepository.findByMember(member);
+            if(resumeFileOptional.isEmpty()){
+                return ResponseDTO.databaseError();
+            }
+            List<ResumeFile> resumeFiles = resumeFileOptional.get();
+
+            for (ResumeFile resumeFile : resumeFiles) {
+                resumeFileTextRepository.deleteByResumeFile(resumeFile);
+            }
+            interviewRepository.deleteByMember(member);
+            resumeFileRepository.deleteByMember(member);
+            memberRepository.deleteById(member.getId());
         }catch (Exception e){
             e.printStackTrace();
             return ResponseDTO.databaseError();
