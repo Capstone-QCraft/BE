@@ -28,8 +28,8 @@ public class InterviewController {
 
     //리스트
     @GetMapping("/list")
-    public ResponseEntity<? super GetInterviewListResponseDTO> getInterviewList() {
-        return interviewService.getInterviewList();
+    public ResponseEntity<? super GetInterviewListResponseDTO> getInterviewList(@RequestParam("page") @Valid Integer page, @RequestParam("size") @Valid Integer size, @RequestParam(defaultValue = "DESC") @Valid String direction) {
+        return interviewService.getInterviewList(page, size, direction);
     }
 
     //기록

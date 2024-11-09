@@ -1,6 +1,7 @@
 package QCraft.QCraft.service.impl;
 
 import QCraft.QCraft.domain.Interview;
+import QCraft.QCraft.domain.Member;
 import QCraft.QCraft.domain.ResumeFile;
 import QCraft.QCraft.domain.ResumeFileText;
 import QCraft.QCraft.dto.request.interview.GetFeedbackRequestDTO;
@@ -14,6 +15,10 @@ import QCraft.QCraft.service.ClaudeApiService;
 import QCraft.QCraft.service.GetAuthenticationService;
 import QCraft.QCraft.service.InterviewService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -103,15 +109,30 @@ public class InterviewServiceImpl implements InterviewService {
 
     //인터뷰 리스트 불러오기
     @Override
-    public ResponseEntity<? super GetInterviewListResponseDTO> getInterviewList() {
+    public ResponseEntity<? super GetInterviewListResponseDTO> getInterviewList(int page, int limit, String direction) {
         try {
-            Optional<List<Interview>> interviewListOptional = interviewRepository.findByMember(getAuthenticationService.getAuthentication().get());
-            if (interviewListOptional.isEmpty()) {
+            Sort.Direction sortDirection = direction.equals("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
+            Sort sort = Sort.by(sortDirection, "createdAt");
+
+            Pageable pageable = PageRequest.of(page, limit, sort);
+
+            Optional<Member> memberOptional = getAuthenticationService.getAuthentication();
+            if (memberOptional.isEmpty()) {
+                return ResponseDTO.databaseError();
+            }
+            Page<Interview> interviewPage = interviewRepository.findByMember(memberOptional.get(), pageable);
+
+            if(interviewPage.isEmpty()) {
                 return GetInterviewListResponseDTO.interviewNotFound();
             }
-            List<Interview> interviewList = interviewListOptional.get();
 
-            return GetInterviewListResponseDTO.success(interviewList);
+            List<InterviewSummaryDTO> interviewSummaryDTOList = interviewPage.getContent().stream()
+                    .map(interview -> new InterviewSummaryDTO(interview.getId(), interview.getCreatedAt(), interview.getResumeFile().getFilename()))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+
+
+            return GetInterviewListResponseDTO.success(interviewSummaryDTOList);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDTO.databaseError();
