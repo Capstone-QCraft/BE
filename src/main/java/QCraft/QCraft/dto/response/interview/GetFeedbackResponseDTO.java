@@ -15,16 +15,20 @@ import java.util.List;
 @Setter
 public class GetFeedbackResponseDTO extends ResponseDTO {
     private String interviewId;
-    private List<String> feedback;
+    private List<List<String>> positivePoint;
+    private List<List<String>> improvement;
+    private String overallSuggestion;
 
-    private GetFeedbackResponseDTO(String interviewId, List<String> feedback) {
+    private GetFeedbackResponseDTO(String interviewId, List<List<String>> positivePoint, List<List<String>> improvement, String overallSuggestion) {
        super();
        this.interviewId = interviewId;
-       this.feedback = feedback;
+       this.positivePoint = positivePoint;
+       this.improvement = improvement;
+       this.overallSuggestion = overallSuggestion;
     }
 
     public static ResponseEntity<GetFeedbackResponseDTO> success(Interview interview) {
-        GetFeedbackResponseDTO responseDTO = new GetFeedbackResponseDTO(interview.getId(), interview.getFeedback());
+        GetFeedbackResponseDTO responseDTO = new GetFeedbackResponseDTO(interview.getId(), interview.getPositivePoint(), interview.getImprovement(), interview.getOverallSuggestion());
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 

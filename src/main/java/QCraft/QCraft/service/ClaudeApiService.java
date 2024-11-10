@@ -80,7 +80,7 @@ public class ClaudeApiService {
     }
 
     //피드백 받기 template
-    public List<String> getFeedbackForAnswers(List<String> questions, List<String> answers) {
+    public String getFeedbackForAnswers(List<String> questions, List<String> answers) {
         List<ClaudeRequestDTO.Message> messages = new ArrayList<>();
 
         StringBuilder systemPrompt = new StringBuilder();
@@ -135,9 +135,7 @@ public class ClaudeApiService {
         try {
             ClaudeResponseDTO response = claudeRestTemplate.postForObject(apiUrl, requestDTO, ClaudeResponseDTO.class);
             if (response != null && response.getContent() != null) {
-                return response.getContent().stream()
-                        .map(ClaudeResponseDTO.Content::getText)
-                        .collect(Collectors.toList());
+                return response.getContent().get(0).getText();
             } else {
                 throw new RuntimeException("Claude API returned an invalid response");
             }
