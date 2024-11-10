@@ -1,8 +1,7 @@
 package QCraft.QCraft.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import QCraft.QCraft.dto.response.interview.FeedbackResult;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -19,7 +18,9 @@ public class Interview {
     private String id;
     private List<String> questions;
     private List<String> answers;
-    private List<String> feedback;
+    private List<List<String>> positivePoint;
+    private List<List<String>> improvement;
+    private String overallSuggestion;
     private LocalDateTime createdAt;
 
     @DBRef
@@ -28,4 +29,5 @@ public class Interview {
     @DBRef
     @Indexed(unique = true)
     private ResumeFile resumeFile;
+
 }

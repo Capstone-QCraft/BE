@@ -44,7 +44,7 @@ public class ResumeFileServiceImpl implements ResumeFileService {
     @Value("${file.upload.directory}")
     private String uploadDirectory;
 
-
+    //파일 업로드
     @Override
     public ResponseEntity<? super UploadFileResponseDTO> uploadFile(UploadFileRequestDTO uploadFileRequestDTO) {
         try {
@@ -85,6 +85,7 @@ public class ResumeFileServiceImpl implements ResumeFileService {
         }
     }
 
+    //파일 상세정보
     @Override
     public ResponseEntity<? super GetFileResponseDTO> getFile(String fileId) {
         try {
@@ -108,6 +109,7 @@ public class ResumeFileServiceImpl implements ResumeFileService {
         }
     }
 
+    //파일 리스트 가져오기
     @Override
     public ResponseEntity<? super GetFileListResponseDTO> getFileList() {
         try {
@@ -127,6 +129,7 @@ public class ResumeFileServiceImpl implements ResumeFileService {
         }
     }
 
+    //파일 삭제
     @Override
     public ResponseEntity<? super DeleteFileResponseDTO> deleteFile(String fileId) {
         try {

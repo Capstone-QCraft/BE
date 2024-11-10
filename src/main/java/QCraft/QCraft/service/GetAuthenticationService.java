@@ -14,6 +14,7 @@ import java.util.Optional;
 public class GetAuthenticationService {
     private final MemberRepository memberRepository;
 
+    //회원정보 가져오기
     public Optional<Member> getAuthentication(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication == null||authentication.getPrincipal()==null){

@@ -10,19 +10,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
 public class GetInterviewListResponseDTO extends ResponseDTO {
-    private List<Interview> interviews;
+    List<InterviewSummaryDTO> data;
 
-    private GetInterviewListResponseDTO(List<Interview> interviews) {
+    private GetInterviewListResponseDTO(List<InterviewSummaryDTO> data) {
         super();
-        this.interviews = interviews;
+        this.data = data;
     }
 
-    public static ResponseEntity<GetInterviewListResponseDTO> success(List<Interview> interviews) {
-        GetInterviewListResponseDTO responseDTO = new GetInterviewListResponseDTO(interviews);
+    public static ResponseEntity<GetInterviewListResponseDTO> success(List<InterviewSummaryDTO> data) {
+        GetInterviewListResponseDTO responseDTO = new GetInterviewListResponseDTO(data);
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 

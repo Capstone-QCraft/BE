@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Optional;
 
 @Component
@@ -37,8 +38,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if (member.isEmpty()) {
             return;
         }
-        String accessToken = jwtUtils.createAccessToken(member.get().getId());
+        String accessToken = jwtUtils.createAccessToken(member.get().getId(), Collections.singletonList(member.get().getRole()));
+        String refreshToken = jwtUtils.createRefreshToken(member.get().getId());
 
-        response.sendRedirect("http://localhost:3000/member/oauth-response/" + accessToken);
+        member.get().setRefreshToken(refreshToken);
+        memberRepository.save(member.get());
+
+        response.sendRedirect("http://localhost:3000/member/oauth-response/" + accessToken+"/"+refreshToken);
     }
 }

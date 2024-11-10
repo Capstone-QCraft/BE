@@ -46,6 +46,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/","/member/email-check","/member/email-certification","/member/check-certification","/member/sign-in","/member/sign-up","/member/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                //oauth2
                 .oauth2Login(oauth2-> oauth2
                         .authorizationEndpoint(endpoint-> endpoint.baseUri("/member/oauth2"))
                         .redirectionEndpoint(endpoint-> endpoint.baseUri("/oauth2/callback/*"))

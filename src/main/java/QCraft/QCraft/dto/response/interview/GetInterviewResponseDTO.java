@@ -3,11 +3,14 @@ package QCraft.QCraft.dto.response.interview;
 import QCraft.QCraft.commons.ResponseCode;
 import QCraft.QCraft.commons.ResponseMessage;
 import QCraft.QCraft.domain.Interview;
+import QCraft.QCraft.domain.ResumeFile;
 import QCraft.QCraft.dto.response.member.ResponseDTO;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -17,6 +20,7 @@ public class GetInterviewResponseDTO extends ResponseDTO {
     private GetInterviewResponseDTO(Interview interview) {
         super();
         this.interview = interview;
+
     }
 
     public static ResponseEntity<GetInterviewResponseDTO> success(Interview interview) {

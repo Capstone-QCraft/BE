@@ -40,7 +40,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-            String memberId = jwtUtils.validateToken(token);
+
+            String memberId = null;
+            if (jwtUtils.validateToken(token)) {
+                memberId = jwtUtils.getIdFromToken(token);
+            }
+
+
             if (memberId == null) {
                 filterChain.doFilter(request, response);
                 return;

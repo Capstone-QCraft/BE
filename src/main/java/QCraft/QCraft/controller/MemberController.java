@@ -45,6 +45,12 @@ public class MemberController {
         return memberService.signIn(signInRequestDTO);
     }
 
+    //토큰 재발급
+    @PostMapping("/refreshToken")
+    public ResponseEntity<? super RefreshTokenResponseDTO> refreshToken(@RequestBody @Valid RefreshTokenRequestDTO refreshTokenRequestDTO) {
+        return memberService.refreshToken(refreshTokenRequestDTO);
+    }
+
     //회원정보 가져오기
     @GetMapping("/get-info")
     public ResponseEntity<? super GetMemberInfoResponseDTO> getMemberInfo() {
