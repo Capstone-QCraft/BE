@@ -16,14 +16,16 @@ import java.util.Map;
 @Setter
 public class GetInterviewListResponseDTO extends ResponseDTO {
     List<InterviewSummaryDTO> data;
+    long totalInterviews;
 
-    private GetInterviewListResponseDTO(List<InterviewSummaryDTO> data) {
+    private GetInterviewListResponseDTO(List<InterviewSummaryDTO> data, Long totalInterviews) {
         super();
         this.data = data;
+        this.totalInterviews = totalInterviews;
     }
 
-    public static ResponseEntity<GetInterviewListResponseDTO> success(List<InterviewSummaryDTO> data) {
-        GetInterviewListResponseDTO responseDTO = new GetInterviewListResponseDTO(data);
+    public static ResponseEntity<GetInterviewListResponseDTO> success(List<InterviewSummaryDTO> data, Long totalInterviews) {
+        GetInterviewListResponseDTO responseDTO = new GetInterviewListResponseDTO(data, totalInterviews);
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 

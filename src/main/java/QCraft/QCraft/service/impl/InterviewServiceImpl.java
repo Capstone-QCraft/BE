@@ -131,8 +131,9 @@ public class InterviewServiceImpl implements InterviewService {
                     .map(interview -> new InterviewSummaryDTO(interview.getId(), interview.getCreatedAt(), interview.getResumeFile().getFilename()))
                     .collect(Collectors.toCollection(ArrayList::new));
 
+            long totalInterviews = interviewPage.getTotalElements();
 
-            return GetInterviewListResponseDTO.success(interviewSummaryDTOList);
+            return GetInterviewListResponseDTO.success(interviewSummaryDTOList, totalInterviews);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDTO.databaseError();
