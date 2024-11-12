@@ -3,6 +3,7 @@ package QCraft.QCraft.domain;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -24,6 +25,7 @@ public class ResumeFile {
 
     private LocalDateTime uploadDate; //업로드 시간
 
+    @Indexed
     private String memberId;
 
     public ResumeFile(String filename, String path, String extension, String memberId) {
@@ -33,7 +35,8 @@ public class ResumeFile {
         this.uploadDate = LocalDateTime.now();
         this.memberId = memberId;
     }
-    public ResumeFile(String filename, String path, String extension,LocalDateTime uploadDate, String memberId) {
+    public ResumeFile(String id, String filename, String path, String extension,LocalDateTime uploadDate, String memberId) {
+        this.id = id;
         this.filename = filename;
         this.path = path;
         this.extension = extension;

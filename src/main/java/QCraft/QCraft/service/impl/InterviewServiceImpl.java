@@ -1,5 +1,6 @@
 package QCraft.QCraft.service.impl;
 
+import QCraft.QCraft.MongoDBProjection.InterviewForListProjection;
 import QCraft.QCraft.domain.Interview;
 import QCraft.QCraft.domain.Member;
 import QCraft.QCraft.domain.ResumeFile;
@@ -68,7 +69,7 @@ public class InterviewServiceImpl implements InterviewService {
             }
             Member member = memberOptional.get();
             ResumeFile resumeFile = resumeFileOptional.get();
-            ResumeFile nestedResumeFile = new ResumeFile(resumeFile.getId(), resumeFile.getPath(), resumeFile.getExtension(),resumeFile.getUploadDate() ,resumeFile.getMemberId());
+            ResumeFile nestedResumeFile = new ResumeFile(resumeFileId, resumeFile.getFilename(), resumeFile.getPath(), resumeFile.getExtension(),resumeFile.getUploadDate() ,resumeFile.getMemberId());
 
 
 
@@ -131,14 +132,19 @@ public class InterviewServiceImpl implements InterviewService {
                 return ResponseDTO.databaseError();
             }
             Member member = memberOptional.get();
-            Page<Interview> interviewPage = interviewRepository.findByMemberId(member.getId(), pageable);
+            Page<InterviewForListProjection> interviewPage = interviewRepository.findByMemberId(member.getId(), pageable);
 
             if (interviewPage.isEmpty()) {
                 return GetInterviewListResponseDTO.interviewNotFound();
             }
 
             List<InterviewSummaryDTO> interviewSummaryDTOList = interviewPage.getContent().stream()
-                    .map(interview -> new InterviewSummaryDTO(interview.getId(), interview.getCreatedAt(), interview.getResumeFile().getFilename()))
+                    .map(interview -> {
+                        String id = interview.getId();
+                        LocalDateTime createdAt = interview.getCreatedAt();
+                        String resumeFilename = interview.getResumeFile().getFilename();
+                        return new InterviewSummaryDTO(id, createdAt, resumeFilename);
+                    })
                     .collect(Collectors.toCollection(ArrayList::new));
 
             long totalInterviews = interviewPage.getTotalElements();
