@@ -23,6 +23,7 @@ application-jwt.properties
 application-mail.properties
 application-oauth.properties
 application-claude.properties
+application-test.properties
 
 src/main/resources/static/files/*
 !src/main/resources/static/files/

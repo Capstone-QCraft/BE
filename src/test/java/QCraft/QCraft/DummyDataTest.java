@@ -6,7 +6,9 @@ import QCraft.QCraft.repository.InterviewRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
@@ -14,8 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest
-//@ExtendWith(SpringExtension.class)
 public class DummyDataTest {
+
+    @Value("${dummy.memberId}")
+    String memberId;
 
     @Autowired
     private InterviewRepository interviewRepository;
@@ -30,15 +34,15 @@ public class DummyDataTest {
             interview.setAnswers(List.of("Answer 1", "Answer 2"));
             interview.setPositivePoint(List.of(List.of("Good point 1", "Good point 2")));
             interview.setImprovement(List.of(List.of("Improvement 1", "Improvement 2")));
-            interview.setOverallSuggestion("This is the overall suggestion for interview " + i);
+            interview.setOverallSuggestion("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%This is the overall suggestion for interview " + i);
             interview.setCreatedAt(LocalDateTime.now().minusDays(i));
-            interview.setMemberId("67331728e6d89c4bc3650f08");
+            interview.setMemberId(memberId);
             ResumeFile resumeFile = new ResumeFile();
             resumeFile.setFilename("testUUID_resume-" + i + ".pdf");
             resumeFile.setPath("dummy/path/testUUID_resume-" + i + ".pdf");
             resumeFile.setExtension("pdf");
             resumeFile.setUploadDate(LocalDateTime.now().minusDays(i));
-            resumeFile.setMemberId("67331728e6d89c4bc3650f08");
+            resumeFile.setMemberId(memberId);
             interview.setResumeFile(resumeFile);
 
             dummyInterviews.add(interview);
