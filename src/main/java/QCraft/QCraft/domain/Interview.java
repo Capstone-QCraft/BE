@@ -21,13 +21,12 @@ public class Interview {
     private List<List<String>> positivePoint;
     private List<List<String>> improvement;
     private String overallSuggestion;
+
+    @Indexed
     private LocalDateTime createdAt;
 
-    @DBRef
-    private Member member;
+    @Indexed
+    private String memberId;
 
-    @DBRef
-    @Indexed(unique = true)
-    private ResumeFile resumeFile;
-
+    private ResumeFile resumeFile;//중첩 사용
 }

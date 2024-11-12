@@ -44,12 +44,12 @@ public class InterviewServiceImpl implements InterviewService {
                 return GetFileResponseDTO.fileNotFound();
             }
 
-            Optional<ResumeFileText> resumeFileTextOptional = resumeFileTextRepository.findByResumeFile(resumeFileOptional.get());
+            Optional<ResumeFileText> resumeFileTextOptional = resumeFileTextRepository.findByResumeFile_Id(resumeFileId);
             if (resumeFileTextOptional.isEmpty()) {
                 return ResponseDTO.databaseError();
             }
 
-            Optional<Interview> interviewOptional = interviewRepository.findByResumeFile(resumeFileOptional.get());
+            Optional<Interview> interviewOptional = interviewRepository.findByResumeFile_Id(resumeFileId);
             if (interviewOptional.isPresent()) {
                 return CreateInterviewResponseDTO.failCreate();
             }
@@ -62,12 +62,21 @@ public class InterviewServiceImpl implements InterviewService {
                 questions.addAll(Arrays.asList(splitByNewLine));
             }
 
+            Optional<Member> memberOptional = getAuthenticationService.getAuthentication();
+            if(memberOptional.isEmpty()){
+                return ResponseDTO.validationError();
+            }
+            Member member = memberOptional.get();
+            ResumeFile resumeFile = resumeFileOptional.get();
+            ResumeFile nestedResumeFile = new ResumeFile(resumeFile.getId(), resumeFile.getPath(), resumeFile.getExtension(),resumeFile.getUploadDate() ,resumeFile.getMemberId());
+
+
 
             Interview interview = new Interview();
             interview.setQuestions(questions);
             interview.setCreatedAt(LocalDateTime.now());
-            interview.setMember(getAuthenticationService.getAuthentication().get());
-            interview.setResumeFile(resumeFileOptional.get());
+            interview.setMemberId(member.getId());
+            interview.setResumeFile(nestedResumeFile);
 
             interviewRepository.save(interview);
 
@@ -121,7 +130,8 @@ public class InterviewServiceImpl implements InterviewService {
             if (memberOptional.isEmpty()) {
                 return ResponseDTO.databaseError();
             }
-            Page<Interview> interviewPage = interviewRepository.findByMember(memberOptional.get(), pageable);
+            Member member = memberOptional.get();
+            Page<Interview> interviewPage = interviewRepository.findByMemberId(member.getId(), pageable);
 
             if (interviewPage.isEmpty()) {
                 return GetInterviewListResponseDTO.interviewNotFound();

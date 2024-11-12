@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.management.relation.RelationNotification;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -113,8 +114,12 @@ public class ResumeFileServiceImpl implements ResumeFileService {
     @Override
     public ResponseEntity<? super GetFileListResponseDTO> getFileList() {
         try {
-            Member member = getAuthenticationService.getAuthentication().get();
-            Optional<List<ResumeFile>> resumeFileListOptional = resumeFileRepository.findByMember(member);
+            Optional<Member> memberOptional = getAuthenticationService.getAuthentication();
+            if(memberOptional.isEmpty()) {
+                return ResponseDTO.validationError();
+            }
+            Member member = memberOptional.get();
+            Optional<List<ResumeFile>> resumeFileListOptional = resumeFileRepository.findByMemberId(member.getId());
 
             if (resumeFileListOptional.isEmpty()) {
                 return GetFileListResponseDTO.fileNotFound();
@@ -139,7 +144,7 @@ public class ResumeFileServiceImpl implements ResumeFileService {
             }
 
             ResumeFile resumeFile = resumeFileOptional.get();
-            resumeFileTextRepository.deleteByResumeFile(resumeFile);
+            resumeFileTextRepository.deleteByResumeFile_Id(resumeFile.getId());
             resumeFileRepository.delete(resumeFile);
 
             return DeleteFileResponseDTO.success();
@@ -167,14 +172,17 @@ public class ResumeFileServiceImpl implements ResumeFileService {
 
 
     private ResumeFile createResumeFile(String filename, String filePath, String extension, LocalDateTime currentDate) throws Exception {
+        Optional<Member> memberOptional = getAuthenticationService.getAuthentication();
+        if (memberOptional.isEmpty()) {
+            return null;
+        }
 
-
-        String memberId = getAuthenticationService.getAuthentication().get().getId();
+        String memberId = memberOptional.get().getId();
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
 
-        return new ResumeFile(filename, filePath, extension, member);
+        return new ResumeFile(filename, filePath, extension, member.getId());
     }
 
 

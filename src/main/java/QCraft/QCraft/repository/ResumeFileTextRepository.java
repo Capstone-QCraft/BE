@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface ResumeFileTextRepository extends MongoRepository<ResumeFileText, String> {
-    Optional<ResumeFileText> findByResumeFile(ResumeFile resumeFile);
-    void deleteByResumeFile(ResumeFile resumeFile);
+    Optional<ResumeFileText> findByResumeFile_Id(String resumeFileId);
+    void deleteByResumeFile_Id(String resumeFileId);
 }

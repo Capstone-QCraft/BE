@@ -24,14 +24,20 @@ public class ResumeFile {
 
     private LocalDateTime uploadDate; //업로드 시간
 
-    @DBRef
-    private Member member;
+    private String memberId;
 
-    public ResumeFile(String filename, String path, String extension, Member member) {
+    public ResumeFile(String filename, String path, String extension, String memberId) {
         this.filename = filename;
         this.path = path;
         this.extension = extension;
         this.uploadDate = LocalDateTime.now();
-        this.member = member;
+        this.memberId = memberId;
+    }
+    public ResumeFile(String filename, String path, String extension,LocalDateTime uploadDate, String memberId) {
+        this.filename = filename;
+        this.path = path;
+        this.extension = extension;
+        this.uploadDate = uploadDate;
+        this.memberId = memberId;
     }
 }

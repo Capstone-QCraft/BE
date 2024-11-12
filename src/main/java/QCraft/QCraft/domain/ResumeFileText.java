@@ -16,7 +16,5 @@ public class ResumeFileText {
 
     private String content;
 
-    @DBRef
-    @Indexed(unique = true)
     private ResumeFile resumeFile;
 }

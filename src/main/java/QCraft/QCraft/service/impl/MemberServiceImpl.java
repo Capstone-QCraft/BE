@@ -311,17 +311,17 @@ public class MemberServiceImpl implements MemberService {
             Member member = memberOptional.get();
 
 
-            Optional<List<ResumeFile>> resumeFileOptional = resumeFileRepository.findByMember(member);
+            Optional<List<ResumeFile>> resumeFileOptional = resumeFileRepository.findByMemberId(member.getId());
             if(resumeFileOptional.isEmpty()){
                 return ResponseDTO.databaseError();
             }
             List<ResumeFile> resumeFiles = resumeFileOptional.get();
 
             for (ResumeFile resumeFile : resumeFiles) {
-                resumeFileTextRepository.deleteByResumeFile(resumeFile);
+                resumeFileTextRepository.deleteByResumeFile_Id(resumeFile.getId());
             }
-            interviewRepository.deleteByMember(member);
-            resumeFileRepository.deleteByMember(member);
+            interviewRepository.deleteByMemberId(member.getId());
+            resumeFileRepository.deleteByMemberId(member.getId());
             memberRepository.deleteById(member.getId());
         }catch (Exception e){
             e.printStackTrace();
