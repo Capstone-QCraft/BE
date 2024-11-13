@@ -31,6 +31,6 @@ public class GetInterviewListResponseDTO extends ResponseDTO {
 
     public static ResponseEntity<ResponseDTO> interviewNotFound() {
         ResponseDTO responseDTO = new ResponseDTO(ResponseCode.INTERVIEW_NOT_FOUND, ResponseMessage.INTERVIEW_NOT_FOUND);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 }
