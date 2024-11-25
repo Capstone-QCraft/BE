@@ -33,4 +33,9 @@ public class GetInterviewListResponseDTO extends ResponseDTO {
         ResponseDTO responseDTO = new ResponseDTO(ResponseCode.INTERVIEW_NOT_FOUND, ResponseMessage.INTERVIEW_NOT_FOUND);
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
+
+    public static ResponseEntity<ResponseDTO> pageRangeOver() {
+        ResponseDTO responseDTO = new ResponseDTO(ResponseCode.OUT_OF_RANGE, ResponseMessage.OUT_OF_RANGE);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+    }
 }

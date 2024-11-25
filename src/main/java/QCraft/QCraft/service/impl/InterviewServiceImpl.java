@@ -64,13 +64,12 @@ public class InterviewServiceImpl implements InterviewService {
             }
 
             Optional<Member> memberOptional = getAuthenticationService.getAuthentication();
-            if(memberOptional.isEmpty()){
+            if (memberOptional.isEmpty()) {
                 return ResponseDTO.validationError();
             }
             Member member = memberOptional.get();
             ResumeFile resumeFile = resumeFileOptional.get();
-            ResumeFile nestedResumeFile = new ResumeFile(resumeFileId, resumeFile.getFilename(), resumeFile.getPath(), resumeFile.getExtension(),resumeFile.getUploadDate() ,resumeFile.getMemberId());
-
+            ResumeFile nestedResumeFile = new ResumeFile(resumeFileId, resumeFile.getFilename(), resumeFile.getPath(), resumeFile.getExtension(), resumeFile.getUploadDate(), resumeFile.getMemberId());
 
 
             Interview interview = new Interview();
@@ -132,7 +131,12 @@ public class InterviewServiceImpl implements InterviewService {
                 return ResponseDTO.databaseError();
             }
             Member member = memberOptional.get();
+
             Page<InterviewForListProjection> interviewPage = interviewRepository.findByMemberId(member.getId(), pageable);
+
+            if (page >= interviewPage.getTotalPages()) {
+                return GetInterviewListResponseDTO.pageRangeOver();
+            }
 
             if (interviewPage.isEmpty()) {
                 return GetInterviewListResponseDTO.interviewNotFound();
@@ -199,11 +203,11 @@ public class InterviewServiceImpl implements InterviewService {
 
         String[] responseBlocks = response.split("전반적인 제언");
 
-        if(responseBlocks.length > 0) {
+        if (responseBlocks.length > 0) {
             String feedbackPart = responseBlocks[0];
-            String[] answerFeedbackBlocks =  feedbackPart.split("답변 \\d+에 대한 피드백");
+            String[] answerFeedbackBlocks = feedbackPart.split("답변 \\d+에 대한 피드백");
 
-            for (int i= 1; i < answerFeedbackBlocks.length; i++) {
+            for (int i = 1; i < answerFeedbackBlocks.length; i++) {
                 String feedbackText = answerFeedbackBlocks[i].trim();
 
                 List<String> positivePoints = extractPoints(feedbackText, "긍정적 측면:");
@@ -219,7 +223,7 @@ public class InterviewServiceImpl implements InterviewService {
             overall = responseBlocks[1].trim();
         }
 
-        return new FeedbackResult(positivePoint,improvement, overall);
+        return new FeedbackResult(positivePoint, improvement, overall);
     }
 
     private List<String> extractPoints(String text, String sectionTitle) {
