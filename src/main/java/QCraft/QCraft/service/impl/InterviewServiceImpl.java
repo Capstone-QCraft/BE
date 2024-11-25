@@ -135,6 +135,9 @@ public class InterviewServiceImpl implements InterviewService {
             Page<InterviewForListProjection> interviewPage = interviewRepository.findByMemberId(member.getId(), pageable);
 
             if (page >= interviewPage.getTotalPages()) {
+                if(interviewPage.getTotalElements() == 0) {
+                    return GetInterviewListResponseDTO.interviewNotFound();
+                }
                 return GetInterviewListResponseDTO.pageOutOfBounds();
             }
 
