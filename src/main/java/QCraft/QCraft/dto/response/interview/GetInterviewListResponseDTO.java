@@ -2,7 +2,6 @@ package QCraft.QCraft.dto.response.interview;
 
 import QCraft.QCraft.commons.ResponseCode;
 import QCraft.QCraft.commons.ResponseMessage;
-import QCraft.QCraft.domain.Interview;
 import QCraft.QCraft.dto.response.member.ResponseDTO;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -34,8 +32,8 @@ public class GetInterviewListResponseDTO extends ResponseDTO {
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 
-    public static ResponseEntity<ResponseDTO> pageRangeOver() {
-        ResponseDTO responseDTO = new ResponseDTO(ResponseCode.OUT_OF_RANGE, ResponseMessage.OUT_OF_RANGE);
+    public static ResponseEntity<ResponseDTO> pageOutOfBounds() {
+        ResponseDTO responseDTO = new ResponseDTO(ResponseCode.PAGE_OUT_OF_BOUNDS, ResponseMessage.PAGE_OUT_OF_BOUNDS);
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 }
