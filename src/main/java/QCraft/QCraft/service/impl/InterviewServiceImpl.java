@@ -134,16 +134,18 @@ public class InterviewServiceImpl implements InterviewService {
 
             Page<InterviewForListProjection> interviewPage = interviewRepository.findByMemberId(member.getId(), pageable);
 
+            long totalInterviews = interviewPage.getTotalElements();
+
             if (page >= interviewPage.getTotalPages()) {
-                if(interviewPage.getTotalElements() == 0) {
+                if(totalInterviews == 0) {
                     return GetInterviewListResponseDTO.interviewNotFound();
                 }
                 return GetInterviewListResponseDTO.pageOutOfBounds();
             }
 
-            if (!interviewPage.hasContent()) {
-                return GetInterviewListResponseDTO.interviewNotFound();
-            }
+//            if (!interviewPage.hasContent()) {
+//                return GetInterviewListResponseDTO.interviewNotFound();
+//            }
 
             List<InterviewSummaryDTO> interviewSummaryDTOList = interviewPage.getContent().stream()
                     .map(interview -> {
@@ -154,7 +156,7 @@ public class InterviewServiceImpl implements InterviewService {
                     })
                     .collect(Collectors.toCollection(ArrayList::new));
 
-            long totalInterviews = interviewPage.getTotalElements();
+
 
             return GetInterviewListResponseDTO.success(interviewSummaryDTOList, totalInterviews);
         } catch (Exception e) {
