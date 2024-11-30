@@ -20,6 +20,18 @@ bin/
 ### IntelliJ IDEA ###
 application-db.properties
 application-jwt.properties
+application-mail.properties
+application-oauth.properties
+application-claude.properties
+application-test.properties
+
+src/main/resources/static/files/*
+!src/main/resources/static/files/
+!src/main/resources/static/files/dummy
+
+src/main/resources/extractedText/*
+!src/main/resources/extractedText/
+!src/main/resources/extractedText/dummy
 .idea
 *.iws
 *.iml
@@ -37,3 +49,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+
