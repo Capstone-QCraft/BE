@@ -143,9 +143,6 @@ public class InterviewServiceImpl implements InterviewService {
                 return GetInterviewListResponseDTO.pageOutOfBounds();
             }
 
-//            if (!interviewPage.hasContent()) {
-//                return GetInterviewListResponseDTO.interviewNotFound();
-//            }
 
             List<InterviewSummaryDTO> interviewSummaryDTOList = interviewPage.getContent().stream()
                     .map(interview -> {

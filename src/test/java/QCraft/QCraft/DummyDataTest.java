@@ -28,7 +28,7 @@ public class DummyDataTest {
     public void insertDummyInterviews(){
         List<Interview> dummyInterviews = new ArrayList<>();
 
-        for(int i= 1; i<=20;i++){
+        for(int i= 1; i<=200;i++){
             Interview interview = new Interview();
             interview.setQuestions(List.of("Question 1", "Question 2"));
             interview.setAnswers(List.of("Answer 1", "Answer 2"));
