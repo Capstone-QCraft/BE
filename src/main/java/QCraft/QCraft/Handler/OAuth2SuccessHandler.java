@@ -24,8 +24,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JwtUtils jwtUtils;
     private final MemberRepository memberRepository;
 
-    @Value("${expiration}")
-    private long expiration;
+    @Value("${oauth.redirect.url}")
+    String redirectUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -44,6 +44,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         member.get().setRefreshToken(refreshToken);
         memberRepository.save(member.get());
 
-        response.sendRedirect("http://localhost:3000/member/oauth-response/" + accessToken+"/"+refreshToken);
+        response.sendRedirect(redirectUrl + accessToken+"/"+refreshToken);
     }
 }

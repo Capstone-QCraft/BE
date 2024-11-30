@@ -1,5 +1,6 @@
 package QCraft.QCraft.service.impl;
 
+import QCraft.QCraft.MongoDBProjection.InterviewForListProjection;
 import QCraft.QCraft.domain.Interview;
 import QCraft.QCraft.domain.Member;
 import QCraft.QCraft.domain.ResumeFile;
@@ -44,12 +45,12 @@ public class InterviewServiceImpl implements InterviewService {
                 return GetFileResponseDTO.fileNotFound();
             }
 
-            Optional<ResumeFileText> resumeFileTextOptional = resumeFileTextRepository.findByResumeFile(resumeFileOptional.get());
+            Optional<ResumeFileText> resumeFileTextOptional = resumeFileTextRepository.findByResumeFile_Id(resumeFileId);
             if (resumeFileTextOptional.isEmpty()) {
                 return ResponseDTO.databaseError();
             }
 
-            Optional<Interview> interviewOptional = interviewRepository.findByResumeFile(resumeFileOptional.get());
+            Optional<Interview> interviewOptional = interviewRepository.findByResumeFile_Id(resumeFileId);
             if (interviewOptional.isPresent()) {
                 return CreateInterviewResponseDTO.failCreate();
             }
@@ -62,12 +63,20 @@ public class InterviewServiceImpl implements InterviewService {
                 questions.addAll(Arrays.asList(splitByNewLine));
             }
 
+            Optional<Member> memberOptional = getAuthenticationService.getAuthentication();
+            if (memberOptional.isEmpty()) {
+                return ResponseDTO.validationError();
+            }
+            Member member = memberOptional.get();
+            ResumeFile resumeFile = resumeFileOptional.get();
+            ResumeFile nestedResumeFile = new ResumeFile(resumeFileId, resumeFile.getFilename(), resumeFile.getPath(), resumeFile.getExtension(), resumeFile.getUploadDate(), resumeFile.getMemberId());
+
 
             Interview interview = new Interview();
             interview.setQuestions(questions);
             interview.setCreatedAt(LocalDateTime.now());
-            interview.setMember(getAuthenticationService.getAuthentication().get());
-            interview.setResumeFile(resumeFileOptional.get());
+            interview.setMemberId(member.getId());
+            interview.setResumeFile(nestedResumeFile);
 
             interviewRepository.save(interview);
 
@@ -121,17 +130,30 @@ public class InterviewServiceImpl implements InterviewService {
             if (memberOptional.isEmpty()) {
                 return ResponseDTO.databaseError();
             }
-            Page<Interview> interviewPage = interviewRepository.findByMember(memberOptional.get(), pageable);
+            Member member = memberOptional.get();
 
-            if (interviewPage.isEmpty()) {
-                return GetInterviewListResponseDTO.interviewNotFound();
-            }
-
-            List<InterviewSummaryDTO> interviewSummaryDTOList = interviewPage.getContent().stream()
-                    .map(interview -> new InterviewSummaryDTO(interview.getId(), interview.getCreatedAt(), interview.getResumeFile().getFilename()))
-                    .collect(Collectors.toCollection(ArrayList::new));
+            Page<InterviewForListProjection> interviewPage = interviewRepository.findByMemberId(member.getId(), pageable);
 
             long totalInterviews = interviewPage.getTotalElements();
+
+            if (page >= interviewPage.getTotalPages()) {
+                if(totalInterviews == 0) {
+                    return GetInterviewListResponseDTO.interviewNotFound();
+                }
+                return GetInterviewListResponseDTO.pageOutOfBounds();
+            }
+
+
+            List<InterviewSummaryDTO> interviewSummaryDTOList = interviewPage.getContent().stream()
+                    .map(interview -> {
+                        String id = interview.getId();
+                        LocalDateTime createdAt = interview.getCreatedAt();
+                        String resumeFilename = interview.getResumeFile().getFilename();
+                        return new InterviewSummaryDTO(id, createdAt, resumeFilename);
+                    })
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+
 
             return GetInterviewListResponseDTO.success(interviewSummaryDTOList, totalInterviews);
         } catch (Exception e) {
@@ -183,11 +205,11 @@ public class InterviewServiceImpl implements InterviewService {
 
         String[] responseBlocks = response.split("전반적인 제언");
 
-        if(responseBlocks.length > 0) {
+        if (responseBlocks.length > 0) {
             String feedbackPart = responseBlocks[0];
-            String[] answerFeedbackBlocks =  feedbackPart.split("답변 \\d+에 대한 피드백");
+            String[] answerFeedbackBlocks = feedbackPart.split("답변 \\d+에 대한 피드백");
 
-            for (int i= 1; i < answerFeedbackBlocks.length; i++) {
+            for (int i = 1; i < answerFeedbackBlocks.length; i++) {
                 String feedbackText = answerFeedbackBlocks[i].trim();
 
                 List<String> positivePoints = extractPoints(feedbackText, "긍정적 측면:");
@@ -203,7 +225,7 @@ public class InterviewServiceImpl implements InterviewService {
             overall = responseBlocks[1].trim();
         }
 
-        return new FeedbackResult(positivePoint,improvement, overall);
+        return new FeedbackResult(positivePoint, improvement, overall);
     }
 
     private List<String> extractPoints(String text, String sectionTitle) {

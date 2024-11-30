@@ -13,8 +13,6 @@ import QCraft.QCraft.service.GetAuthenticationService;
 import QCraft.QCraft.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -311,17 +308,17 @@ public class MemberServiceImpl implements MemberService {
             Member member = memberOptional.get();
 
 
-            Optional<List<ResumeFile>> resumeFileOptional = resumeFileRepository.findByMember(member);
+            Optional<List<ResumeFile>> resumeFileOptional = resumeFileRepository.findByMemberId(member.getId());
             if(resumeFileOptional.isEmpty()){
                 return ResponseDTO.databaseError();
             }
             List<ResumeFile> resumeFiles = resumeFileOptional.get();
 
             for (ResumeFile resumeFile : resumeFiles) {
-                resumeFileTextRepository.deleteByResumeFile(resumeFile);
+                resumeFileTextRepository.deleteByResumeFile_Id(resumeFile.getId());
             }
-            interviewRepository.deleteByMember(member);
-            resumeFileRepository.deleteByMember(member);
+            interviewRepository.deleteByMemberId(member.getId());
+            resumeFileRepository.deleteByMemberId(member.getId());
             memberRepository.deleteById(member.getId());
         }catch (Exception e){
             e.printStackTrace();

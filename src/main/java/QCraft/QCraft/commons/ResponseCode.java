@@ -22,5 +22,6 @@ public interface ResponseCode {
     String FEEDBACK_GENERATION_FAILED = "FEGF";
     String CLAUDE_ERROR = "CLA";
     String INTERVIEW_NOT_FOUND = "INF";
+    String PAGE_OUT_OF_BOUNDS = "POB";
 
 }
