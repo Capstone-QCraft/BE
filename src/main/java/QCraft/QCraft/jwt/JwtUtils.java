@@ -64,6 +64,17 @@ public class JwtUtils {
                 .compact();
     }
 
+    public String createRefreshToken(String memberId, Date expiration) {
+        Key key = generateKey();
+
+        return Jwts.builder()
+                .setSubject(memberId)
+                .setIssuedAt(new Date())
+                .setExpiration(expiration)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     public List<String> refreshToken(String refreshToken) {
         try {
 
@@ -75,6 +86,7 @@ public class JwtUtils {
             Jws<Claims> claims = Jwts.parserBuilder()
                     .setSigningKey(key).build().parseClaimsJws(refreshToken);
             String userId = claims.getBody().getSubject();
+            Date expiration = claims.getBody().getExpiration();
 
             Optional<Member> memberOptional = memberRepository.findById(userId);
             if (memberOptional.isEmpty()) {
@@ -83,7 +95,7 @@ public class JwtUtils {
             Member member = memberOptional.get();
 
             if (refreshToken.equals(member.getRefreshToken())) {
-                String newRefreshToken = createRefreshToken(member.getId());
+                String newRefreshToken = createRefreshToken(member.getId(), expiration);
                 member.setRefreshToken(newRefreshToken);
                 memberRepository.save(member);
 
