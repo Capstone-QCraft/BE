@@ -54,7 +54,7 @@ public class MemberController {
     }
 
     //로그아웃
-    @PostMapping("/log-out")
+    @PostMapping("/sign-out")
     public ResponseEntity<? super SignOutResponseDTO> signOut(HttpServletResponse response) {
         return memberService.signOut(response);
     }
