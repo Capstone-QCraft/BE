@@ -51,6 +51,7 @@ public class JwtUtils {
 
     }
 
+    //refreshToken 생성
     public String createRefreshToken(String memberId) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshExpiration);
@@ -64,6 +65,7 @@ public class JwtUtils {
                 .compact();
     }
 
+    //refreshToken 재발급
     public String createRefreshToken(String memberId, Date expiration) {
         Key key = generateKey();
 
@@ -75,6 +77,7 @@ public class JwtUtils {
                 .compact();
     }
 
+    //refreshToken 확인 및 재발급
     public List<String> refreshToken(String refreshToken) {
         try {
 
@@ -132,12 +135,14 @@ public class JwtUtils {
         }
     }
 
+    //토큰에서 id가져오기
     public String getIdFromToken(String jwt) {
         Key key = generateKey();
 
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt).getBody().getSubject();
     }
 
+    //key 생성
     private Key generateKey() {
         if (secretKey.length() < 32) {
             throw new RuntimeException("Secret key must be at least 32 characters");

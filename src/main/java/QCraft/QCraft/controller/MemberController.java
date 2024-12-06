@@ -46,7 +46,7 @@ public class MemberController {
     }
 
     //토큰 재발급
-    @PostMapping("/refreshToken")
+    @PostMapping("/refresh-token")
     public ResponseEntity<? super RefreshTokenResponseDTO> refreshToken(@RequestBody @Valid RefreshTokenRequestDTO refreshTokenRequestDTO) {
         return memberService.refreshToken(refreshTokenRequestDTO);
     }

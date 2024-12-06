@@ -68,7 +68,7 @@ public class WebSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("https://www.qcraft.site");
         configuration.addAllowedOrigin("https://qcraft.site");
-        configuration.addAllowedOrigin("httpL//localhost:3000/");
+        configuration.addAllowedOrigin("http://localhost:3000/");
         configuration.addAllowedHeader("Content-Type");
         configuration.addAllowedHeader("Authorization");
         configuration.addAllowedMethod("GET");
