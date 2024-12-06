@@ -55,8 +55,8 @@ public class MemberController {
 
     //로그아웃
     @PostMapping("/sign-out")
-    public ResponseEntity<? super SignOutResponseDTO> signOut(HttpServletResponse response) {
-        return memberService.signOut(response);
+    public ResponseEntity<? super SignOutResponseDTO> signOut(HttpServletRequest request, HttpServletResponse response) {
+        return memberService.signOut(request, response);
     }
 
     //회원정보 가져오기
@@ -73,12 +73,9 @@ public class MemberController {
 
     //회원탈퇴
     @DeleteMapping("/withdraw")
-    public ResponseEntity<? super WithdrawMemberResponseDTO> withdraw(){
+    public ResponseEntity<? super WithdrawMemberResponseDTO> withdraw() {
         return memberService.withdraw();
     }
-
-
-
 
 
 }
