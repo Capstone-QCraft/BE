@@ -14,6 +14,7 @@ public interface ResponseMessage {
     String DATABASE_ERROR = "database error";
 
     String EXPIRED_TOKEN = "expired token";
+    String REFRESH_TOKEN_NOT_FOUND = "refresh token not found";
 
     String FILE_ERROR = "file error";
     String FILE_NOT_FOUND = "file not found";

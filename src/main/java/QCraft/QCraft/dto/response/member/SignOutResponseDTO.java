@@ -9,13 +9,13 @@ import org.springframework.http.ResponseEntity;
 
 @Getter
 @Setter
-public class LogOutResponseDTO extends ResponseDTO {
-    private LogOutResponseDTO() {
+public class SignOutResponseDTO extends ResponseDTO {
+    private SignOutResponseDTO() {
         super();
     }
 
-    public static ResponseEntity<LogOutResponseDTO> success(){
-        LogOutResponseDTO responseBody = new LogOutResponseDTO();
+    public static ResponseEntity<SignOutResponseDTO> success(){
+        SignOutResponseDTO responseBody = new SignOutResponseDTO();
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 

@@ -26,4 +26,9 @@ public class RefreshTokenResponseDTO extends ResponseDTO {
         ResponseDTO responseDTO = new ResponseDTO(ResponseCode.EXPIRED_TOKEN, ResponseMessage.EXPIRED_TOKEN);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
     }
+
+    public static ResponseEntity<ResponseDTO> tokenNotFound() {
+        ResponseDTO responseDTO = new ResponseDTO(ResponseCode.REFRESH_TOKEN_NOT_FOUND, ResponseMessage.REFRESH_TOKEN_NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDTO);
+    }
 }

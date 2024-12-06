@@ -11,6 +11,7 @@ import QCraft.QCraft.jwt.JwtUtils;
 import QCraft.QCraft.repository.*;
 import QCraft.QCraft.service.GetAuthenticationService;
 import QCraft.QCraft.service.MemberService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -224,11 +225,28 @@ public class MemberServiceImpl implements MemberService {
 
     //토큰 재발급
     @Override
-    public ResponseEntity<? super RefreshTokenResponseDTO> refreshToken(RefreshTokenRequestDTO requestDTO){
+    public ResponseEntity<? super RefreshTokenResponseDTO> refreshToken(HttpServletRequest request){
         try {
-            String oldRefreshToken = requestDTO.getRefreshToken();
+            Cookie[] cookies = request.getCookies();
 
-            List<String> tokens = jwtUtils.refreshToken(oldRefreshToken);
+            if(cookies == null){
+                return RefreshTokenResponseDTO.tokenNotFound();
+            }
+
+            String refreshToken = null;
+
+            for(Cookie cookie : cookies){
+                if("refreshToken".equals(cookie.getName())){
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+
+            if(refreshToken == null){
+                return RefreshTokenResponseDTO.tokenNotFound();
+            }
+
+            List<String> tokens = jwtUtils.refreshToken(refreshToken);
             if(tokens == null || tokens.isEmpty()){
                 return RefreshTokenResponseDTO.expiredRefreshToken();
             }
@@ -247,8 +265,6 @@ public class MemberServiceImpl implements MemberService {
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.SET_COOKIE, responseCookie.toString());
 
-
-
             return new ResponseEntity<>(RefreshTokenResponseDTO.success(newAccessToken), headers, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
@@ -259,16 +275,13 @@ public class MemberServiceImpl implements MemberService {
 
     //로그아웃
     @Override
-    public ResponseEntity<? super LogOutResponseDTO> logOut() {
+    public ResponseEntity<? super SignOutResponseDTO> signOut(HttpServletResponse response) {
         try {
-            Optional<Member> memberOptional;
-            Member member;
-
-            memberOptional = getAuthenticationService.getAuthentication();
+            Optional<Member> memberOptional = getAuthenticationService.getAuthentication();
             if(memberOptional.isEmpty()){
                 return ResponseDTO.databaseError();
             }
-            member = memberOptional.get();
+            Member member = memberOptional.get();
 
             member.setRefreshToken(null);
             memberRepository.save(member);
@@ -281,10 +294,9 @@ public class MemberServiceImpl implements MemberService {
                     .sameSite("Strict")
                     .build();
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+            response.setHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
-            return new ResponseEntity<>(LogOutResponseDTO.success(),headers,HttpStatus.OK);
+            return new ResponseEntity<>(SignOutResponseDTO.success(), HttpStatus.OK);
 
 
         }catch (Exception e){
