@@ -11,6 +11,8 @@ import QCraft.QCraft.jwt.JwtUtils;
 import QCraft.QCraft.repository.*;
 import QCraft.QCraft.service.GetAuthenticationService;
 import QCraft.QCraft.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -255,6 +257,42 @@ public class MemberServiceImpl implements MemberService {
 
     }
 
+    //로그아웃
+    @Override
+    public ResponseEntity<? super LogOutResponseDTO> logOut() {
+        try {
+            Optional<Member> memberOptional;
+            Member member;
+
+            memberOptional = getAuthenticationService.getAuthentication();
+            if(memberOptional.isEmpty()){
+                return ResponseDTO.databaseError();
+            }
+            member = memberOptional.get();
+
+            member.setRefreshToken(null);
+            memberRepository.save(member);
+
+            ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", "")
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(0) // 즉시 만료
+                    .sameSite("Strict")
+                    .build();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+
+            return new ResponseEntity<>(LogOutResponseDTO.success(),headers,HttpStatus.OK);
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResponseDTO.databaseError();
+        }
+    }
+
 
     //회원정보 불러오기
     @Override
@@ -352,6 +390,7 @@ public class MemberServiceImpl implements MemberService {
 
         return WithdrawMemberResponseDTO.success();
     }
+
 
 
 }

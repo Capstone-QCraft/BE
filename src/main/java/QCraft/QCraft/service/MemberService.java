@@ -2,6 +2,7 @@ package QCraft.QCraft.service;
 
 import QCraft.QCraft.dto.request.member.*;
 import QCraft.QCraft.dto.response.member.*;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 
 public interface MemberService {
@@ -15,4 +16,5 @@ public interface MemberService {
     ResponseEntity<? super GetMemberInfoResponseDTO> getMemberInfo();
     ResponseEntity<? super WithdrawMemberResponseDTO> withdraw();
     ResponseEntity<? super RefreshTokenResponseDTO> refreshToken(RefreshTokenRequestDTO requestDTO);
+    ResponseEntity<? super LogOutResponseDTO> logOut();
 }
