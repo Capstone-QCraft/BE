@@ -11,16 +11,14 @@ import org.springframework.http.ResponseEntity;
 @Setter
 public class RefreshTokenResponseDTO extends ResponseDTO {
     private String accessToken;
-    private String refreshToken;
 
-    public RefreshTokenResponseDTO(String accessToken, String refreshToken) {
+    public RefreshTokenResponseDTO(String accessToken) {
         super();
         this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
     }
 
-    public static ResponseEntity<RefreshTokenResponseDTO> success(String accessToken, String refreshToken) {
-        RefreshTokenResponseDTO refreshTokenResponseDTO = new RefreshTokenResponseDTO(accessToken, refreshToken);
+    public static ResponseEntity<RefreshTokenResponseDTO> success(String accessToken) {
+        RefreshTokenResponseDTO refreshTokenResponseDTO = new RefreshTokenResponseDTO(accessToken);
         return ResponseEntity.status(HttpStatus.OK).body(refreshTokenResponseDTO);
     }
 

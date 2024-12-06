@@ -12,6 +12,9 @@ import QCraft.QCraft.repository.*;
 import QCraft.QCraft.service.GetAuthenticationService;
 import QCraft.QCraft.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -199,13 +202,22 @@ public class MemberServiceImpl implements MemberService {
 
             memberRepository.save(member.get());
 
+            ResponseCookie refreshTokenCookie  = ResponseCookie.from("refreshToken", refreshToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(7*24*60*60)
+                    .sameSite("Strict")
+                    .build();
 
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+
+            return new ResponseEntity<>(SignInResponseDTO.success(accessToken), headers, HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
             return ResponseDTO.databaseError();
         }
-
-        return SignInResponseDTO.success(accessToken, refreshToken);
     }
 
     //토큰 재발급
@@ -222,7 +234,20 @@ public class MemberServiceImpl implements MemberService {
             String newAccessToken = tokens.get(0);
             String newRefreshToken = tokens.get(1);
 
-            return RefreshTokenResponseDTO.success(newAccessToken, newRefreshToken);
+            ResponseCookie responseCookie = ResponseCookie.from("refreshToken", newRefreshToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(7*24*60*60)
+                    .sameSite("Strict")
+                    .build();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.SET_COOKIE, responseCookie.toString());
+
+
+
+            return new ResponseEntity<>(RefreshTokenResponseDTO.success(newAccessToken), headers, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDTO.databaseError();
