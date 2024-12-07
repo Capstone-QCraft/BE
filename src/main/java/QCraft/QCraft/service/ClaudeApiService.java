@@ -43,7 +43,7 @@ public class ClaudeApiService {
                 "Avoid yes/no questions or those with obvious answers. " +
                 "Instead, focus on questions that encourage reflection, self-assessment, and the sharing of specific examples or anecdotes. " +
                 "Since the text extracted from the file is passed as is, do not consider useless content when generate a question. " +
-                "Generate in Korean."+
+                "Generate in Korean." +
                 "form: 1.question1\\n2.question2\\n3.question1\\3";
 
 
@@ -85,7 +85,7 @@ public class ClaudeApiService {
 
         StringBuilder systemPrompt = new StringBuilder();
         systemPrompt.append("Please analyze the following interview questions and answers to provide feedback. " +
-                "Do not give evaluation scores or anything like that."+
+                "Do not give evaluation scores or anything like that." +
                 "Provide detailed feedback focusing on clarity, content, and areas for improvement. Generate in Korean.");
         systemPrompt.append("\n\n");
         systemPrompt.append("Please write your feedback using the following format(The number of each feedback is irrelevant.):\n");

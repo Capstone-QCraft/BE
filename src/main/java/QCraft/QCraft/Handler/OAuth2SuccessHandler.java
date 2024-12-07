@@ -28,6 +28,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     @Value("${oauth.redirect.url}")
     String redirectUrl;
+    @Value("${token.expiration.refresh}")
+    long refreshTokenExpiration;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -50,11 +52,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge(7 * 24 * 60 * 60) // 7일 유효
+                .maxAge(refreshTokenExpiration / 100) // 7일 유효
                 .sameSite("Strict") // 필요한 경우 "Lax"로 변경
                 .build();
 
         response.setHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-        response.sendRedirect(redirectUrl +"?accessToken="+accessToken);
+        response.sendRedirect(redirectUrl + "?accessToken=" + accessToken);
     }
 }

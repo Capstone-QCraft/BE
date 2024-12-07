@@ -20,11 +20,11 @@ public class GetFeedbackResponseDTO extends ResponseDTO {
     private String overallSuggestion;
 
     private GetFeedbackResponseDTO(String interviewId, List<List<String>> positivePoint, List<List<String>> improvement, String overallSuggestion) {
-       super();
-       this.interviewId = interviewId;
-       this.positivePoint = positivePoint;
-       this.improvement = improvement;
-       this.overallSuggestion = overallSuggestion;
+        super();
+        this.interviewId = interviewId;
+        this.positivePoint = positivePoint;
+        this.improvement = improvement;
+        this.overallSuggestion = overallSuggestion;
     }
 
     public static ResponseEntity<GetFeedbackResponseDTO> success(Interview interview) {

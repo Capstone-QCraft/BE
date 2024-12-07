@@ -34,12 +34,12 @@ public class UploadFileResponseDTO extends ResponseDTO {
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 
-    public static ResponseEntity<ResponseDTO> fileError(){
+    public static ResponseEntity<ResponseDTO> fileError() {
         ResponseDTO responseBody = new ResponseDTO(ResponseCode.FILE_ERROR, ResponseMessage.FILE_ERROR);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
     }
 
-    public static ResponseEntity<ResponseDTO> fileNotFound(){
+    public static ResponseEntity<ResponseDTO> fileNotFound() {
         ResponseDTO responseBody = new ResponseDTO(ResponseCode.FILE_NOT_FOUND, ResponseMessage.FILE_NOT_FOUND);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
     }

@@ -19,7 +19,7 @@ public class ClaudeResponseDTO {
 
     @Getter
     @Setter
-    public static class Content{
+    public static class Content {
         private String text;
     }
 

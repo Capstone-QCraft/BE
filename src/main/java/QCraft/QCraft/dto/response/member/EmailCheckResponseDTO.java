@@ -12,12 +12,12 @@ public class EmailCheckResponseDTO extends ResponseDTO {
         super();
     }
 
-    public static ResponseEntity<EmailCheckResponseDTO> success(){
+    public static ResponseEntity<EmailCheckResponseDTO> success() {
         EmailCheckResponseDTO responseBody = new EmailCheckResponseDTO();
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
-    public static ResponseEntity<ResponseDTO> duplicated(){
+    public static ResponseEntity<ResponseDTO> duplicated() {
         ResponseDTO responseBody = new ResponseDTO(ResponseCode.DUPLICATE_EMAIL, ResponseMessage.DUPLICATE_EMAIL);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
 

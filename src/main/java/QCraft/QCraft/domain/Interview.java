@@ -32,4 +32,5 @@ public class Interview {
     private String memberId;
 
     private ResumeFile resumeFile;//중첩 사용
+
 }

@@ -7,11 +7,11 @@ import org.springframework.http.ResponseEntity;
 @Getter
 public class WithdrawMemberResponseDTO extends ResponseDTO {
 
-    private WithdrawMemberResponseDTO(){
+    private WithdrawMemberResponseDTO() {
         super();
     }
 
-    public static ResponseEntity<WithdrawMemberResponseDTO> success(){
+    public static ResponseEntity<WithdrawMemberResponseDTO> success() {
         WithdrawMemberResponseDTO responseDTO = new WithdrawMemberResponseDTO();
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }

@@ -47,4 +47,5 @@ public class Member {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
+
 }

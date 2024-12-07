@@ -15,5 +15,4 @@ public class UploadFileRequestDTO {
     @NotNull
     private MultipartFile file;
 
-
 }

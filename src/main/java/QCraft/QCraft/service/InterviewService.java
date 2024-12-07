@@ -7,8 +7,12 @@ import org.springframework.http.ResponseEntity;
 
 public interface InterviewService {
     ResponseEntity<? super CreateInterviewResponseDTO> generateInterviewQuestions(String resumeFileId);
+
     ResponseEntity<? super GetFeedbackResponseDTO> getFeedback(GetFeedbackRequestDTO requestDTO);
+
     ResponseEntity<? super GetInterviewListResponseDTO> getInterviewList(int page, int limit, String direction);
-    ResponseEntity<? super GetInterviewResponseDTO>getInterview(String interviewId);
-    ResponseEntity<? super DeleteInterviewDTO>deleteInterview(String interviewId);
+
+    ResponseEntity<? super GetInterviewResponseDTO> getInterview(String interviewId);
+
+    ResponseEntity<? super DeleteInterviewDTO> deleteInterview(String interviewId);
 }

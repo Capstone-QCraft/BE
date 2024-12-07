@@ -30,12 +30,12 @@ public class ResumeFileTextServiceImpl implements ResumeFileTextService {
     //텍스트 파일 가져오기
     @Override
     public ResumeFileText createResumeFileText(ResumeFile resumeFile, String extension) {
-        try{
+        try {
             ResumeFileText resumeFileText = new ResumeFileText();
 
             String content = runPythonScript(extension, resumeFile);
 
-            if(content == null||content.isEmpty()||content.equals("pyerror")) {
+            if (content == null || content.isEmpty() || content.equals("pyerror")) {
                 System.out.println("123123");
                 return null;
             }
@@ -46,7 +46,7 @@ public class ResumeFileTextServiceImpl implements ResumeFileTextService {
             resumeFileText.setResumeFile(resumeFile);
 
             return resumeFileText;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -55,7 +55,7 @@ public class ResumeFileTextServiceImpl implements ResumeFileTextService {
 
     //파이썬 스크립트 실행
     private String runPythonScript(String extension, ResumeFile resumeFile) {
-        try{
+        try {
             String resumeFilePath = resumeFile.getPath();
 
             ProcessBuilder processBuilder = new ProcessBuilder(pythonScriptCommand, pythonScriptPath, extension, resumeFilePath);
@@ -68,45 +68,45 @@ public class ResumeFileTextServiceImpl implements ResumeFileTextService {
             StringBuilder extractedText = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
-                System.out.println("python 출력 :"+line);
-                if(line.equals("pyerror")){
+                System.out.println("python 출력 :" + line);
+                if (line.equals("pyerror")) {
                     return null;
                 }
                 extractedText.append(line).append("\n");
             }
 
             int exitCode = process.waitFor();
-            System.out.println("python 스크립트 종료 코드: "+exitCode);
+            System.out.println("python 스크립트 종료 코드: " + exitCode);
 
-            if(exitCode != 0) {
+            if (exitCode != 0) {
                 System.out.println("파이썬 오류");
                 return "pyerror";
             }
 
             return extractedText.toString().trim();
 
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
     private void saveExtractedTextToFile(String content, ResumeFile resumeFile) {
-        try{
+        try {
             Path directoryPath = Paths.get("src/main/resources/extractedText");
-            if(!Files.exists(directoryPath)) {
+            if (!Files.exists(directoryPath)) {
                 Files.createDirectory(directoryPath);
             }
 
-            String fileName = UUID.randomUUID()+resumeFile.getFilename().substring(resumeFile.getFilename().indexOf("_")+1) + ".txt";
+            String fileName = UUID.randomUUID() + resumeFile.getFilename().substring(resumeFile.getFilename().indexOf("_") + 1) + ".txt";
             Path filePath = directoryPath.resolve(fileName);
 
-            try(BufferedWriter writer = Files.newBufferedWriter(filePath)) {
+            try (BufferedWriter writer = Files.newBufferedWriter(filePath)) {
                 writer.write(content);
             }
 
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

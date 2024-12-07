@@ -28,7 +28,7 @@ public class GetFileListResponseDTO extends ResponseDTO {
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 
-    public static ResponseEntity<ResponseDTO> fileNotFound(){
+    public static ResponseEntity<ResponseDTO> fileNotFound() {
         ResponseDTO responseBody = new ResponseDTO(ResponseCode.FILE_NOT_FOUND, ResponseMessage.FILE_NOT_FOUND);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseBody);
     }

@@ -16,7 +16,7 @@ public class ClaudeApiConfig {
 
     //claude api 템플릿 기본설정
     @Bean
-    public RestTemplate claudeRestTemplate(RestTemplateBuilder builder, @Value("${claude.api.key}")String apiKey) {
+    public RestTemplate claudeRestTemplate(RestTemplateBuilder builder, @Value("${claude.api.key}") String apiKey) {
         return builder
                 .defaultHeader("x-api-key", apiKey)
                 .defaultHeader("anthropic-version", "2023-06-01")

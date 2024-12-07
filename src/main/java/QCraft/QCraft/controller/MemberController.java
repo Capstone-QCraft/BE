@@ -77,5 +77,4 @@ public class MemberController {
         return memberService.withdraw(response);
     }
 
-
 }

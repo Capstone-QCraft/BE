@@ -213,7 +213,7 @@ public class MemberServiceImpl implements MemberService {
                     .httpOnly(true)
                     .secure(true)
                     .path("/")
-                    .maxAge(refreshTokenExpiration/100)
+                    .maxAge(refreshTokenExpiration / 100)
                     .sameSite("Strict")
                     .build();
 
@@ -262,7 +262,7 @@ public class MemberServiceImpl implements MemberService {
                     .httpOnly(true)
                     .secure(true)
                     .path("/")
-                    .maxAge(refreshTokenExpiration/100)
+                    .maxAge(refreshTokenExpiration / 100)
                     .sameSite("Strict")
                     .build();
 

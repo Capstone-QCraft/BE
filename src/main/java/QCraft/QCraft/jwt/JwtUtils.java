@@ -81,7 +81,7 @@ public class JwtUtils {
     public List<String> refreshToken(String refreshToken) {
         try {
 
-            if(!validateToken(refreshToken)) {
+            if (!validateToken(refreshToken)) {
                 return null;
             }
 

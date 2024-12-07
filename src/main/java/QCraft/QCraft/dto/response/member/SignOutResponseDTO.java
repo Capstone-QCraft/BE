@@ -14,12 +14,12 @@ public class SignOutResponseDTO extends ResponseDTO {
         super();
     }
 
-    public static ResponseEntity<SignOutResponseDTO> success(){
+    public static ResponseEntity<SignOutResponseDTO> success() {
         SignOutResponseDTO responseBody = new SignOutResponseDTO();
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
-    public static ResponseEntity<ResponseDTO> alreadyLogOut(){
+    public static ResponseEntity<ResponseDTO> alreadyLogOut() {
         ResponseDTO responseBody = new ResponseDTO(ResponseCode.EXPIRED_TOKEN, ResponseMessage.EXPIRED_TOKEN);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }

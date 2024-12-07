@@ -76,14 +76,14 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
         String finalUserName = userName;
 
         Optional<Member> optionalMember = memberRepository.findByEmail(finalUserEmail);
-        if(optionalMember.isPresent()&&!optionalMember.get().getType().equals(provider)) {
+        if (optionalMember.isPresent() && !optionalMember.get().getType().equals(provider)) {
             throw new OAuth2AuthenticationException("Email already in use");
         }
 
         Member member = optionalMember.orElseGet(() -> {
-                    Member newMember = new Member(finalUserEmail, finalUserName, provider);
-                    return memberRepository.save(newMember);
-                });
+            Member newMember = new Member(finalUserEmail, finalUserName, provider);
+            return memberRepository.save(newMember);
+        });
 
         return new CustomOAuth2User(userEmail);
     }

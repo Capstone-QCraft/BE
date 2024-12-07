@@ -15,15 +15,15 @@ public class GetAuthenticationService {
     private final MemberRepository memberRepository;
 
     //회원정보 가져오기
-    public Optional<Member> getAuthentication(){
+    public Optional<Member> getAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication == null||authentication.getPrincipal()==null){
+        if (authentication == null || authentication.getPrincipal() == null) {
             return Optional.empty();
         }
         String memberId = (String) authentication.getPrincipal();
 
         Optional<Member> member = memberRepository.findById(memberId);
-        if(member.isEmpty()){
+        if (member.isEmpty()) {
             return Optional.empty();
         }
 

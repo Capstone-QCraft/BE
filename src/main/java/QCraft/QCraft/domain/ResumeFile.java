@@ -35,7 +35,8 @@ public class ResumeFile {
         this.uploadDate = LocalDateTime.now();
         this.memberId = memberId;
     }
-    public ResumeFile(String id, String filename, String path, String extension,LocalDateTime uploadDate, String memberId) {
+
+    public ResumeFile(String id, String filename, String path, String extension, LocalDateTime uploadDate, String memberId) {
         this.id = id;
         this.filename = filename;
         this.path = path;
@@ -43,4 +44,5 @@ public class ResumeFile {
         this.uploadDate = uploadDate;
         this.memberId = memberId;
     }
+
 }

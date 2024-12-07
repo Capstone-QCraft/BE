@@ -10,7 +10,10 @@ import org.springframework.http.ResponseEntity;
 public interface ResumeFileService {
 
     ResponseEntity<? super UploadFileResponseDTO> uploadFile(UploadFileRequestDTO uploadFileRequestDTO);
+
     ResponseEntity<? super GetFileResponseDTO> getFile(String fileId);
+
     ResponseEntity<? super GetFileListResponseDTO> getFileList();
+
     ResponseEntity<? super DeleteFileResponseDTO> deleteFile(String fileId);
 }

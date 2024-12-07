@@ -11,5 +11,6 @@ import java.util.Optional;
 @Repository
 public interface ResumeFileRepository extends MongoRepository<ResumeFile, String> {
     Optional<List<ResumeFile>> findByMemberId(String memberId);
+
     void deleteByMemberId(String MemberId);
 }

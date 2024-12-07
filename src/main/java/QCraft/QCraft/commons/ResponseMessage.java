@@ -24,4 +24,5 @@ public interface ResponseMessage {
     String CLAUDE_ERROR = "claude error";
     String INTERVIEW_NOT_FOUND = "interview not found";
     String PAGE_OUT_OF_BOUNDS = "page out of bounds";
+
 }

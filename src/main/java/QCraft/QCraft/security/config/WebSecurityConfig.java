@@ -34,7 +34,7 @@ public class WebSecurityConfig {
     @Bean
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
-                .cors(cors->cors
+                .cors(cors -> cors
                         .configurationSource(corsConfigurationSource())
                 )
                 .csrf(CsrfConfigurer::disable)
@@ -43,17 +43,17 @@ public class WebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/","/member/email-check","/member/email-certification","/member/check-certification","/member/sign-in","/member/sign-up","/member/refresh-token","/member/sign-out" ,"/member/oauth2/**").permitAll()
+                        .requestMatchers("/", "/member/email-check", "/member/email-certification", "/member/check-certification", "/member/sign-in", "/member/sign-up", "/member/refresh-token", "/member/sign-out", "/member/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 //oauth2
-                .oauth2Login(oauth2-> oauth2
-                        .authorizationEndpoint(endpoint-> endpoint.baseUri("/member/oauth2"))
-                        .redirectionEndpoint(endpoint-> endpoint.baseUri("/oauth2/callback/*"))
-                        .userInfoEndpoint(endpoint->endpoint.userService(defaultOAuth2UserService))
+                .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(endpoint -> endpoint.baseUri("/member/oauth2"))
+                        .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
+                        .userInfoEndpoint(endpoint -> endpoint.userService(defaultOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                 )
-                .exceptionHandling(exceptionHandling->exceptionHandling
+                .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(new FailedAuthenticationEntryPoint())
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -78,10 +78,9 @@ public class WebSecurityConfig {
         configuration.addAllowedMethod("OPTIONS");
         configuration.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source =new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
     }
-
 }
