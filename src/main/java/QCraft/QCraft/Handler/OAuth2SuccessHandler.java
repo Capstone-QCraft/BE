@@ -57,6 +57,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .build();
 
         response.setHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-        response.sendRedirect(redirectUrl + "?access-token=" + accessToken);
+        response.sendRedirect(redirectUrl + accessToken);
     }
 }
