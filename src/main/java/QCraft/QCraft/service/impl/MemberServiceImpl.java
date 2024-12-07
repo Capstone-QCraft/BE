@@ -15,6 +15,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -45,6 +46,9 @@ public class MemberServiceImpl implements MemberService {
     private final JwtUtils jwtUtils;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    @Value("${token.expiration.refresh}")
+    long refreshTokenExpiration;
 
 
     //이메일 중복체크
@@ -209,7 +213,7 @@ public class MemberServiceImpl implements MemberService {
                     .httpOnly(true)
                     .secure(true)
                     .path("/")
-                    .maxAge(7 * 24 * 60 * 60)
+                    .maxAge(refreshTokenExpiration/100)
                     .sameSite("Strict")
                     .build();
 
@@ -258,7 +262,7 @@ public class MemberServiceImpl implements MemberService {
                     .httpOnly(true)
                     .secure(true)
                     .path("/")
-                    .maxAge(7 * 24 * 60 * 60)
+                    .maxAge(refreshTokenExpiration/100)
                     .sameSite("Strict")
                     .build();
 
