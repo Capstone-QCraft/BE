@@ -73,8 +73,8 @@ public class MemberController {
 
     //회원탈퇴
     @DeleteMapping("/withdraw")
-    public ResponseEntity<? super WithdrawMemberResponseDTO> withdraw() {
-        return memberService.withdraw();
+    public ResponseEntity<? super WithdrawMemberResponseDTO> withdraw(HttpServletResponse response) {
+        return memberService.withdraw(response);
     }
 
 

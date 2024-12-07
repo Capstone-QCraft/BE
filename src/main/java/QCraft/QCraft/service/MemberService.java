@@ -22,7 +22,7 @@ public interface MemberService {
 
     ResponseEntity<? super GetMemberInfoResponseDTO> getMemberInfo();
 
-    ResponseEntity<? super WithdrawMemberResponseDTO> withdraw();
+    ResponseEntity<? super WithdrawMemberResponseDTO> withdraw(HttpServletResponse response);
 
     ResponseEntity<? super RefreshTokenResponseDTO> refreshToken(HttpServletRequest request);
 

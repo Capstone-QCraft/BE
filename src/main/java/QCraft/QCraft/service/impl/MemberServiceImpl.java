@@ -399,13 +399,23 @@ public class MemberServiceImpl implements MemberService {
     //회원탈퇴
     @Override
     @Transactional
-    public ResponseEntity<? super WithdrawMemberResponseDTO> withdraw() {
+    public ResponseEntity<? super WithdrawMemberResponseDTO> withdraw(HttpServletResponse response) {
         try {
             Optional<Member> memberOptional = getAuthenticationService.getAuthentication();
             if (memberOptional.isEmpty()) {
                 return ResponseDTO.databaseError();
             }
             Member member = memberOptional.get();
+
+            ResponseCookie responseCookie = ResponseCookie.from("refreshToken", "")
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(0) // 즉시 만료
+                    .sameSite("Strict")
+                    .build();
+
+            response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
 
 
             Optional<List<ResumeFile>> resumeFileOptional = resumeFileRepository.findByMemberId(member.getId());
@@ -420,12 +430,13 @@ public class MemberServiceImpl implements MemberService {
             interviewRepository.deleteByMemberId(member.getId());
             resumeFileRepository.deleteByMemberId(member.getId());
             memberRepository.deleteById(member.getId());
+
+            return new ResponseEntity<>(WithdrawMemberResponseDTO.success(), HttpStatus.OK);
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDTO.databaseError();
         }
-
-        return WithdrawMemberResponseDTO.success();
     }
 
 
