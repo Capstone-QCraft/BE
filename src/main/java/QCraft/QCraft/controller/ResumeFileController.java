@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/file")
+@RequestMapping("/api/v1/file")
 public class ResumeFileController {
 
     private final ResumeFileService resumeFileService;

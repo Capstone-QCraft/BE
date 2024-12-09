@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/interview")
+@RequestMapping("/api/v1/interview")
 public class InterviewController {
     private final InterviewService interviewService;
 
