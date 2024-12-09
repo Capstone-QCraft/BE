@@ -137,7 +137,7 @@ public class InterviewServiceImpl implements InterviewService {
             long totalInterviews = interviewPage.getTotalElements();
 
             if (page >= interviewPage.getTotalPages()) {
-                if(totalInterviews == 0) {
+                if (totalInterviews == 0) {
                     return GetInterviewListResponseDTO.interviewNotFound();
                 }
                 return GetInterviewListResponseDTO.pageOutOfBounds();
@@ -152,7 +152,6 @@ public class InterviewServiceImpl implements InterviewService {
                         return new InterviewSummaryDTO(id, createdAt, resumeFilename);
                     })
                     .collect(Collectors.toCollection(ArrayList::new));
-
 
 
             return GetInterviewListResponseDTO.success(interviewSummaryDTOList, totalInterviews);

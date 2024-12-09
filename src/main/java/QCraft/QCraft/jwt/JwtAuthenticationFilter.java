@@ -46,7 +46,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 memberId = jwtUtils.getIdFromToken(token);
             }
 
-
             if (memberId == null) {
                 filterChain.doFilter(request, response);
                 return;
@@ -67,7 +66,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } else {
                 throw new IllegalArgumentException("아이디를 찾을 수 없음");
             }
-
 
         } catch (Exception e) {
             e.printStackTrace();

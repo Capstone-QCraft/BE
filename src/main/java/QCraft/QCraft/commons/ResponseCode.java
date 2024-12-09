@@ -14,6 +14,7 @@ public interface ResponseCode {
     String DATABASE_ERROR = "DBE";
 
     String EXPIRED_TOKEN = "ET";
+    String REFRESH_TOKEN_NOT_FOUND = "RTN";
 
     String FILE_ERROR = "FIE";
     String FILE_NOT_FOUND = "FIN";

@@ -43,4 +43,5 @@ public class InterviewController {
     public ResponseEntity<? super DeleteInterviewDTO> deleteInterview(@PathVariable String interviewId) {
         return interviewService.deleteInterview(interviewId);
     }
+
 }

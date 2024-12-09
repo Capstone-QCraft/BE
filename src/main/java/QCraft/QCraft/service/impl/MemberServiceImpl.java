@@ -11,7 +11,14 @@ import QCraft.QCraft.jwt.JwtUtils;
 import QCraft.QCraft.repository.*;
 import QCraft.QCraft.service.GetAuthenticationService;
 import QCraft.QCraft.service.MemberService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,6 +46,9 @@ public class MemberServiceImpl implements MemberService {
     private final JwtUtils jwtUtils;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    @Value("${token.expiration.refresh}")
+    long refreshTokenExpiration;
 
 
     //이메일 중복체크
@@ -168,9 +178,9 @@ public class MemberServiceImpl implements MemberService {
     //로그인
     @Override
     public ResponseEntity<? super SignInResponseDTO> signIn(SignInRequestDTO signInRequestDTO) {
-        String accessToken=null;
-        String refreshToken=null;
-        try{
+        String accessToken = null;
+        String refreshToken = null;
+        try {
             String email = signInRequestDTO.getEmail();
             String password = signInRequestDTO.getPassword();
 
@@ -179,55 +189,149 @@ public class MemberServiceImpl implements MemberService {
                 return SignInResponseDTO.signInFailed();
             }
 
-            if(!member.get().getType().equals("email")){
+            if (!member.get().getType().equals("email")) {
                 return SignInResponseDTO.signInFailed();
             }
 
 
             String encodedPassword = member.get().getPassword();
-            if(!passwordEncoder.matches(password, encodedPassword)){
+            if (!passwordEncoder.matches(password, encodedPassword)) {
                 return SignInResponseDTO.passwordMismatch();
             }
 
 
             String memberId = member.get().getId();
             List<String> memberRole = Collections.singletonList(member.get().getRole());
-            accessToken = jwtUtils.createAccessToken(memberId,memberRole);
+            accessToken = jwtUtils.createAccessToken(memberId, memberRole);
             refreshToken = jwtUtils.createRefreshToken(memberId);
 
             member.get().setRefreshToken(refreshToken);
 
             memberRepository.save(member.get());
 
+            ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(refreshTokenExpiration / 100)
+                    .sameSite("Strict")
+                    .build();
 
-        }catch (Exception e){
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+
+            return new ResponseEntity<>(SignInResponseDTO.success(accessToken), headers, HttpStatus.OK);
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseDTO.databaseError();
         }
-
-        return SignInResponseDTO.success(accessToken, refreshToken);
     }
 
     //토큰 재발급
     @Override
-    public ResponseEntity<? super RefreshTokenResponseDTO> refreshToken(RefreshTokenRequestDTO requestDTO){
+    public ResponseEntity<? super RefreshTokenResponseDTO> refreshToken(HttpServletRequest request) {
         try {
-            String oldRefreshToken = requestDTO.getRefreshToken();
+            Cookie[] cookies = request.getCookies();
 
-            List<String> tokens = jwtUtils.refreshToken(oldRefreshToken);
-            if(tokens == null || tokens.isEmpty()){
+            if (cookies == null) {
+                return RefreshTokenResponseDTO.tokenNotFound();
+            }
+
+            String refreshToken = null;
+
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+
+            if (refreshToken == null) {
+                return RefreshTokenResponseDTO.tokenNotFound();
+            }
+
+            List<String> tokens = jwtUtils.refreshToken(refreshToken);
+            if (tokens == null || tokens.isEmpty()) {
                 return RefreshTokenResponseDTO.expiredRefreshToken();
             }
 
             String newAccessToken = tokens.get(0);
             String newRefreshToken = tokens.get(1);
 
-            return RefreshTokenResponseDTO.success(newAccessToken, newRefreshToken);
+            ResponseCookie responseCookie = ResponseCookie.from("refreshToken", newRefreshToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(refreshTokenExpiration / 100)
+                    .sameSite("Strict")
+                    .build();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.SET_COOKIE, responseCookie.toString());
+
+            return new ResponseEntity<>(RefreshTokenResponseDTO.success(newAccessToken), headers, HttpStatus.OK);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseDTO.databaseError();
         }
 
+    }
+
+    //로그아웃
+    @Override
+    public ResponseEntity<? super SignOutResponseDTO> signOut(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            Cookie[] cookies = request.getCookies();
+            if (cookies == null) {
+                return SignOutResponseDTO.alreadyLogOut();
+            }
+
+            String refreshToken = null;
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+
+            if (refreshToken == null) {
+                return SignOutResponseDTO.alreadyLogOut();
+            }
+
+            // JWT에서 memberId(subject) 추출
+            String memberId = jwtUtils.getIdFromToken(refreshToken);
+            if (memberId == null) {
+                return ResponseDTO.validationError();
+            }
+
+            // memberId로 사용자 조회 및 처리
+            Optional<Member> memberOptional = memberRepository.findById(memberId);
+            if (memberOptional.isEmpty()) {
+                return ResponseDTO.databaseError();
+            }
+
+            Member member = memberOptional.get();
+
+            member.setRefreshToken(null);
+            memberRepository.save(member);
+
+            ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", "")
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(0) // 즉시 만료
+                    .sameSite("Strict")
+                    .build();
+
+            response.setHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+
+            return new ResponseEntity<>(SignOutResponseDTO.success(), HttpStatus.OK);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseDTO.databaseError();
+        }
     }
 
 
@@ -236,16 +340,16 @@ public class MemberServiceImpl implements MemberService {
     public ResponseEntity<? super GetMemberInfoResponseDTO> getMemberInfo() {
         Optional<Member> memberOptional;
         Member member;
-        try{
+        try {
             memberOptional = getAuthenticationService.getAuthentication();
-            if(memberOptional.isEmpty()){
+            if (memberOptional.isEmpty()) {
                 return ResponseDTO.databaseError();
             }
 
             member = memberOptional.get();
 
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseDTO.databaseError();
         }
@@ -256,7 +360,7 @@ public class MemberServiceImpl implements MemberService {
     //회원정보 수정
     @Override
     public ResponseEntity<? super UpdateMemberInfoResponseDTO> updateMemberInfo(UpdateMemberInfoRequestDTO updateMemberInfoRequestDTO) {
-        try{
+        try {
             String email = updateMemberInfoRequestDTO.getEmail();
             String name = updateMemberInfoRequestDTO.getName();
             String oldPassword = updateMemberInfoRequestDTO.getOldPassword();
@@ -288,7 +392,7 @@ public class MemberServiceImpl implements MemberService {
 
             memberRepository.save(memberEntity);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseDTO.databaseError();
         }
@@ -299,17 +403,27 @@ public class MemberServiceImpl implements MemberService {
     //회원탈퇴
     @Override
     @Transactional
-    public ResponseEntity<? super WithdrawMemberResponseDTO> withdraw() {
+    public ResponseEntity<? super WithdrawMemberResponseDTO> withdraw(HttpServletResponse response) {
         try {
             Optional<Member> memberOptional = getAuthenticationService.getAuthentication();
-            if(memberOptional.isEmpty()){
+            if (memberOptional.isEmpty()) {
                 return ResponseDTO.databaseError();
             }
             Member member = memberOptional.get();
 
+            ResponseCookie responseCookie = ResponseCookie.from("refreshToken", "")
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(0) // 즉시 만료
+                    .sameSite("Strict")
+                    .build();
+
+            response.setHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+
 
             Optional<List<ResumeFile>> resumeFileOptional = resumeFileRepository.findByMemberId(member.getId());
-            if(resumeFileOptional.isEmpty()){
+            if (resumeFileOptional.isEmpty()) {
                 return ResponseDTO.databaseError();
             }
             List<ResumeFile> resumeFiles = resumeFileOptional.get();
@@ -320,12 +434,13 @@ public class MemberServiceImpl implements MemberService {
             interviewRepository.deleteByMemberId(member.getId());
             resumeFileRepository.deleteByMemberId(member.getId());
             memberRepository.deleteById(member.getId());
-        }catch (Exception e){
+
+            return new ResponseEntity<>(WithdrawMemberResponseDTO.success(), HttpStatus.OK);
+
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseDTO.databaseError();
         }
-
-        return WithdrawMemberResponseDTO.success();
     }
 
 

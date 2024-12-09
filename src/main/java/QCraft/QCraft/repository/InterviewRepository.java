@@ -12,6 +12,8 @@ import java.util.Optional;
 @Repository
 public interface InterviewRepository extends MongoRepository<Interview, String> {
     Page<InterviewForListProjection> findByMemberId(String memberId, Pageable pageable);
+
     Optional<Interview> findByResumeFile_Id(String resumeFileId);
+
     void deleteByMemberId(String memberId);
 }

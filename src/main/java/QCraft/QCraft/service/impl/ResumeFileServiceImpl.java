@@ -115,7 +115,7 @@ public class ResumeFileServiceImpl implements ResumeFileService {
     public ResponseEntity<? super GetFileListResponseDTO> getFileList() {
         try {
             Optional<Member> memberOptional = getAuthenticationService.getAuthentication();
-            if(memberOptional.isEmpty()) {
+            if (memberOptional.isEmpty()) {
                 return ResponseDTO.validationError();
             }
             Member member = memberOptional.get();
@@ -148,7 +148,7 @@ public class ResumeFileServiceImpl implements ResumeFileService {
             resumeFileRepository.delete(resumeFile);
 
             return DeleteFileResponseDTO.success();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseDTO.databaseError();
         }
@@ -168,7 +168,6 @@ public class ResumeFileServiceImpl implements ResumeFileService {
 
         return filePath.toString();
     }
-
 
 
     private ResumeFile createResumeFile(String filename, String filePath, String extension, LocalDateTime currentDate) throws Exception {

@@ -17,4 +17,5 @@ public class ResumeFileText {
     private String content;
 
     private ResumeFile resumeFile;
+
 }

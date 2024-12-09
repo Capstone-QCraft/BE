@@ -11,12 +11,12 @@ public class UpdateMemberInfoResponseDTO extends ResponseDTO {
         super();
     }
 
-    public static ResponseEntity<UpdateMemberInfoResponseDTO> success(){
+    public static ResponseEntity<UpdateMemberInfoResponseDTO> success() {
         UpdateMemberInfoResponseDTO responseDTO = new UpdateMemberInfoResponseDTO();
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 
-    public static ResponseEntity<ResponseDTO> passwordMismatch(){
+    public static ResponseEntity<ResponseDTO> passwordMismatch() {
         ResponseDTO responseBody = new ResponseDTO(ResponseCode.PASSWORD_MISMATCH, ResponseMessage.PASSWORD_MISMATCH);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseBody);
     }

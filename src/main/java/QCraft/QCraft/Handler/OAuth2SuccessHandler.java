@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -26,6 +28,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     @Value("${oauth.redirect.url}")
     String redirectUrl;
+    @Value("${token.expiration.refresh}")
+    long refreshTokenExpiration;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -44,6 +48,15 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         member.get().setRefreshToken(refreshToken);
         memberRepository.save(member.get());
 
-        response.sendRedirect(redirectUrl + accessToken+"/"+refreshToken);
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(refreshTokenExpiration / 100) // 7일 유효
+                .sameSite("Strict") // 필요한 경우 "Lax"로 변경
+                .build();
+
+        response.setHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+        response.sendRedirect(redirectUrl + accessToken);
     }
 }

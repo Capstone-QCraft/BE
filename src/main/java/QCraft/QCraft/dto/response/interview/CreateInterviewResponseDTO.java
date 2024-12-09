@@ -31,10 +31,9 @@ public class CreateInterviewResponseDTO extends ResponseDTO {
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 
-    public static ResponseEntity<ResponseDTO> failCreate(){
+    public static ResponseEntity<ResponseDTO> failCreate() {
         ResponseDTO responseBody = new ResponseDTO(ResponseCode.QUESTION_GENERATION_FAILED, ResponseMessage.QUESTION_GENERATION_FAILED);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
     }
-
 
 }

@@ -3,6 +3,8 @@ package QCraft.QCraft.controller;
 import QCraft.QCraft.dto.request.member.*;
 import QCraft.QCraft.dto.response.member.*;
 import QCraft.QCraft.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -46,9 +48,15 @@ public class MemberController {
     }
 
     //토큰 재발급
-    @PostMapping("/refreshToken")
-    public ResponseEntity<? super RefreshTokenResponseDTO> refreshToken(@RequestBody @Valid RefreshTokenRequestDTO refreshTokenRequestDTO) {
-        return memberService.refreshToken(refreshTokenRequestDTO);
+    @PostMapping("/refresh-token")
+    public ResponseEntity<? super RefreshTokenResponseDTO> refreshToken(HttpServletRequest request) {
+        return memberService.refreshToken(request);
+    }
+
+    //로그아웃
+    @PostMapping("/sign-out")
+    public ResponseEntity<? super SignOutResponseDTO> signOut(HttpServletRequest request, HttpServletResponse response) {
+        return memberService.signOut(request, response);
     }
 
     //회원정보 가져오기
@@ -65,12 +73,8 @@ public class MemberController {
 
     //회원탈퇴
     @DeleteMapping("/withdraw")
-    public ResponseEntity<? super WithdrawMemberResponseDTO> withdraw(){
-        return memberService.withdraw();
+    public ResponseEntity<? super WithdrawMemberResponseDTO> withdraw(HttpServletResponse response) {
+        return memberService.withdraw(response);
     }
-
-
-
-
 
 }

@@ -12,16 +12,14 @@ import org.springframework.http.ResponseEntity;
 public class SignInResponseDTO extends ResponseDTO {
 
     private String accessToken;
-    private String refreshToken;
 
-    private SignInResponseDTO(String accessToken, String refreshToken) {
+    private SignInResponseDTO(String accessToken) {
         super();
         this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
     }
 
-    public static ResponseEntity<SignInResponseDTO> success(String accessToken, String refreshToken) {
-        SignInResponseDTO responseBody = new SignInResponseDTO(accessToken, refreshToken);
+    public static ResponseEntity<SignInResponseDTO> success(String accessToken) {
+        SignInResponseDTO responseBody = new SignInResponseDTO(accessToken);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 

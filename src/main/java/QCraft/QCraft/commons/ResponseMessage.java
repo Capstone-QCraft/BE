@@ -14,6 +14,7 @@ public interface ResponseMessage {
     String DATABASE_ERROR = "database error";
 
     String EXPIRED_TOKEN = "expired token";
+    String REFRESH_TOKEN_NOT_FOUND = "refresh token not found";
 
     String FILE_ERROR = "file error";
     String FILE_NOT_FOUND = "file not found";
@@ -23,4 +24,5 @@ public interface ResponseMessage {
     String CLAUDE_ERROR = "claude error";
     String INTERVIEW_NOT_FOUND = "interview not found";
     String PAGE_OUT_OF_BOUNDS = "page out of bounds";
+
 }
